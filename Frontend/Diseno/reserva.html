@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoteles Enanos - Crear reserva</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aboreto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="logo.svg">
+</head>
+<body>
+    <header class="glass header">
+        <div class="logo" style="display:flex; flex-direction:column; align-items:center; gap:2px; background:none; box-shadow:none; padding:0;">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                <polygon points="20,6 6,18 8,18 8,34 32,34 32,18 34,18" fill="#FFF"></polygon>
+                <rect x="14" y="24" width="6" height="10" fill="#E8E8E8"></rect>
+                <rect x="20" y="24" width="6" height="6" fill="#E8E8E8"></rect>
+            </svg>
+            <span style="font-family:'Aboreto',serif; color:#FFF; font-size:12px; line-height:22px; font-weight:bold; letter-spacing:2px;">Hoteles Enanos</span>
+        </div>
+        <nav>
+            <ul class="nav-list">
+                <li><a href="index.html" class="nav-link">Inicio</a></li>
+                <li><a href="index.html#hotelsList" class="nav-link">Hoteles</a></li>
+                <li><a href="#" class="nav-link">Reservas</a></li>
+                <li><a href="usuario.html" class="nav-link">Usuarios</a></li>
+            </ul>
+        </nav>
+        <div style="display:flex; gap:16px; align-items:center;">
+            <button type="button" class="btn-primary" id="headerLoginBtn" onclick="window.location.href='usuario.html'">Iniciar sesión</button>
+            <button type="button" class="btn-primary" id="headerRegisterBtn" onclick="window.location.href='usuario.html'">Registrarse</button>
+            <button type="button" class="btn-secondary" id="headerLogoutBtn">Cerrar sesión</button>
+        </div>
+    </header>
+    <main class="reservation-layout">
+        <section class="glass reservation-summary">
+            <p class="breadcrumb"><a href="index.html">Inicio</a> / Crear reserva</p>
+            <h1 class="title-abro" id="reservationTitle">Nueva reserva</h1>
+            <p class="subtitle-urbanist" id="selectedHotelLabel">Selecciona las fechas y completa los datos para confirmar tu estancia.</p>
+        </section>
+
+        <section class="glass selection-card">
+            <div class="rooms-header">
+                <h2 class="section-title">Tu selección</h2>
+                <p class="rooms-message" id="selectionMessage">Selecciona una habitación para continuar.</p>
+            </div>
+            <div class="selection-details" id="selectionDetails">
+                <p><strong>Habitación:</strong> <span id="selectionRoom">—</span></p>
+                <p><strong>Precio base:</strong> <span id="selectionPrice">—</span></p>
+                <div>
+                    <strong>Servicios elegidos:</strong>
+                    <ul id="selectionServices" class="selection-services"></ul>
+                </div>
+                <button type="button" class="btn-secondary" id="changeRoomButton">Cambiar habitación</button>
+            </div>
+        </section>
+
+        <section class="glass reservation-form-card">
+            <h2 class="section-title">Datos de la reserva</h2>
+            <form id="reservationForm" class="reservation-form">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="hotelName">Hotel</label>
+                        <input type="text" id="hotelName" name="hotelName" readonly>
+                        <input type="hidden" id="hotelId" name="hotelId">
+                        <input type="hidden" id="habitacionId" name="habitacionId">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="fechaEntrada">Fecha entrada</label>
+                        <input type="date" id="fechaEntrada" name="fechaEntrada" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="fechaSalida">Fecha salida</label>
+                        <input type="date" id="fechaSalida" name="fechaSalida" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="numPersonas">Número de personas</label>
+                        <input type="number" id="numPersonas" name="numPersonas" min="1" step="1" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="precioTotal">Precio total (€)</label>
+                        <input type="number" id="precioTotal" name="precioTotal" min="0" step="0.01" placeholder="Calculado automáticamente" required readonly>
+                    </div>
+
+                    <div class="form-field checkbox-field">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="todoIncluido" name="todoIncluido">
+                            Todo incluido
+                        </label>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="estadoReserva">Estado</label>
+                        <select id="estadoReserva" name="estadoReserva">
+                            <option value="PENDIETE">Pendiente</option>
+                            <option value="CONFIRMADA">Confirmada</option>
+                            <option value="CANCELADA">Cancelada</option>
+                            <option value="COMPLETADA">Completada</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="motivoCancelacion">Motivo cancelación</label>
+                        <input type="text" id="motivoCancelacion" name="motivoCancelacion" maxlength="200" placeholder="Opcional">
+                    </div>
+
+                    <div class="form-field full-row">
+                        <label for="observaciones">Observaciones</label>
+                        <textarea id="observaciones" name="observaciones" rows="4" maxlength="500" placeholder="Especifica cualquier petición especial o información adicional."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Confirmar reserva</button>
+                    <button type="button" class="btn-secondary" id="backButton">Volver</button>
+                </div>
+            </form>
+            <div id="formFeedback" class="form-feedback" role="status" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <script src="../TypeScript/session.js"></script>
+    <script src="../TypeScript/reserva.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoteles Enanos - Área de usuarios</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aboreto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="logo.svg">
+</head>
+<body>
+    <header class="glass header">
+        <div class="logo" style="display:flex; flex-direction:column; align-items:center; gap:2px; background:none; box-shadow:none; padding:0;">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                <polygon points="20,6 6,18 8,18 8,34 32,34 32,18 34,18" fill="#FFF"></polygon>
+                <rect x="14" y="24" width="6" height="10" fill="#E8E8E8"></rect>
+                <rect x="20" y="24" width="6" height="6" fill="#E8E8E8"></rect>
+            </svg>
+            <span style="font-family:'Aboreto',serif; color:#FFF; font-size:12px; line-height:22px; font-weight:bold; letter-spacing:2px;">Hoteles Enanos</span>
+        </div>
+        <nav>
+            <ul class="nav-list">
+                <li><a href="index.html" class="nav-link">Inicio</a></li>
+                <li><a href="habitaciones.html" class="nav-link">Hoteles</a></li>
+                <li><a href="reserva.html" class="nav-link">Reservas</a></li>
+                <li><a href="usuario.html" class="nav-link active">Usuarios</a></li>
+            </ul>
+        </nav>
+        <div style="display:flex; gap:16px; align-items:center;">
+            <button type="button" class="btn-primary" id="headerLoginBtn">Iniciar sesión</button>
+            <button type="button" class="btn-primary" id="headerRegisterBtn">Registrarse</button>
+            <button type="button" class="btn-secondary" id="headerLogoutBtn">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main class="reservation-layout user-layout">
+        <section class="glass reservation-summary">
+            <p class="breadcrumb"><a href="index.html">Inicio</a> / Usuarios</p>
+            <h1 class="title-abro">Panel de usuarios</h1>
+            <p class="subtitle-urbanist">Inicia sesión para consultar tus reservas o administrar las de otros clientes.</p>
+        </section>
+
+        <section class="glass user-card">
+            <h2 class="section-title">Iniciar sesión</h2>
+            <form id="loginForm" class="user-form">
+                <label for="loginEmail">Correo</label>
+                <input type="email" id="loginEmail" name="loginEmail" required placeholder="usuario@correo.com">
+
+                <label for="loginPassword">Contraseña</label>
+                <input type="password" id="loginPassword" name="loginPassword" required placeholder="Introduce la contraseña">
+
+                <button type="submit" class="btn-primary">Entrar</button>
+                <p class="form-feedback" id="loginFeedback"></p>
+            </form>
+        </section>
+
+        <section class="glass user-card" id="clientePanel" style="display:none;">
+            <div class="panel-header">
+                <h2 class="section-title">Reservas del cliente</h2>
+                <button type="button" class="btn-secondary" id="historialBtn">Ver historial</button>
+            </div>
+            <p id="clienteMensaje">Pulsa en "Ver historial" para mostrar tus reservas.</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Estado</th>
+                            <th>Personas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clienteReservasBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="glass user-card" id="adminPanel" style="display:none;">
+            <h2 class="section-title">Herramientas de administrador</h2>
+            <div class="admin-actions">
+                <button class="btn-secondary" id="btnTodasReservas">Ver todas las reservas</button>
+            </div>
+            <form class="user-form inline-form" id="buscarIdForm">
+                <label for="busquedaId">Buscar por ID</label>
+                <input type="number" id="busquedaId" min="1" required placeholder="Introduce el ID">
+                <button type="submit" class="btn-primary">Buscar</button>
+            </form>
+            <form class="user-form inline-form" id="buscarCorreoForm">
+                <label for="busquedaCorreo">Buscar por correo</label>
+                <input type="email" id="busquedaCorreo" required placeholder="cliente@correo.com">
+                <button type="submit" class="btn-primary">Buscar</button>
+            </form>
+            <section class="admin-subpanel">
+                <h3 class="section-title">Crear / actualizar reserva</h3>
+                <form class="user-form admin-form" id="gestionarReservaForm">
+                    <label for="adminReservaId">ID de reserva (solo para actualizar)</label>
+                    <input type="number" id="adminReservaId" min="0" placeholder="Deja vacío para crear">
+
+                    <label for="adminUsuarioId">ID de usuario</label>
+                    <input type="number" id="adminUsuarioId" min="1" required placeholder="Id del cliente">
+
+                    <label for="adminHabitacionId">ID de habitación</label>
+                    <input type="number" id="adminHabitacionId" min="1" required placeholder="Id de la habitación">
+
+                    <label for="adminFechaEntrada">Fecha de entrada</label>
+                    <input type="date" id="adminFechaEntrada" required>
+
+                    <label for="adminFechaSalida">Fecha de salida</label>
+                    <input type="date" id="adminFechaSalida" required>
+
+                    <label for="adminNumPersonas">Número de personas</label>
+                    <input type="number" id="adminNumPersonas" min="1" required>
+
+                    <label for="adminEstado">Estado</label>
+                    <select id="adminEstado">
+                        <option value="PENDIETE">Pendiente</option>
+                        <option value="CONFIRMADA">Confirmada</option>
+                        <option value="CANCELADA">Cancelada</option>
+                        <option value="COMPLETADA">Completada</option>
+                    </select>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="adminTodoIncluido">
+                        Todo incluido
+                    </label>
+
+                    <label for="adminObservaciones">Observaciones</label>
+                    <textarea id="adminObservaciones" rows="2" placeholder="Notas opcionales"></textarea>
+
+                    <div class="admin-form-buttons">
+                        <button type="button" class="btn-primary" id="btnCrearReserva">Crear</button>
+                        <button type="button" class="btn-secondary" id="btnActualizarReserva">Actualizar</button>
+                    </div>
+                </form>
+
+                <form class="user-form inline-form" id="eliminarReservaForm">
+                    <label for="adminEliminarId">Eliminar reserva por ID</label>
+                    <input type="number" id="adminEliminarId" min="1" required placeholder="ID a eliminar">
+                    <button type="submit" class="btn-secondary">Eliminar</button>
+                </form>
+                <p class="form-feedback" id="adminGestionFeedback"></p>
+            </section>
+            <p class="form-feedback" id="adminFeedback"></p>
+        </section>
+
+        <section class="glass user-card" id="resultadosPanel" style="display:none;">
+            <h2 class="section-title">Reservas encontradas</h2>
+            <p id="resultadoMensaje">Utiliza las opciones para cargar información.</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Habitación</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaReservasBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal-card glass">
+            <button type="button" class="modal-close" id="closeRegisterModal">&times;</button>
+            <h2 class="section-title">Crear cuenta rápida</h2>
+            <form id="registerForm" class="user-form">
+                <label for="registerEmail">Correo</label>
+                <input type="email" id="registerEmail" required placeholder="nuevo@correo.com">
+
+                <label for="registerNombre">Nombre</label>
+                <input type="text" id="registerNombre" placeholder="Nombre (opcional)">
+
+                <label for="registerApellido">Apellido</label>
+                <input type="text" id="registerApellido" placeholder="Apellido (opcional)">
+
+                <label for="registerPassword">Contraseña</label>
+                <input type="password" id="registerPassword" required placeholder="Crea una contraseña">
+
+                <label for="registerTelefono">Teléfono</label>
+                <input type="tel" id="registerTelefono" placeholder="Teléfono de contacto">
+
+                <button type="submit" class="btn-primary">Registrarse</button>
+                <p class="form-feedback" id="registerFeedback"></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="../TypeScript/session.js"></script>
+    <script src="../TypeScript/usuario.js"></script>
+</body>
+</html>

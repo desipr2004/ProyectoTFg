@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoteles Enanos - Habitaciones</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aboreto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="logo.svg">
+</head>
+<body>
+    <header class="glass header">
+        <div class="logo" style="display:flex; flex-direction:column; align-items:center; gap:2px; background:none; box-shadow:none; padding:0;">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                <polygon points="20,6 6,18 8,18 8,34 32,34 32,18 34,18" fill="#FFF"></polygon>
+                <rect x="14" y="24" width="6" height="10" fill="#E8E8E8"></rect>
+                <rect x="20" y="24" width="6" height="6" fill="#E8E8E8"></rect>
+            </svg>
+            <span style="font-family:'Aboreto',serif; color:#FFF; font-size:12px; line-height:22px; font-weight:bold; letter-spacing:2px;">Hoteles Enanos</span>
+        </div>
+        <nav>
+            <ul class="nav-list">
+                <li><a href="index.html" class="nav-link">Inicio</a></li>
+                <li><a href="index.html#hotelsList" class="nav-link">Hoteles</a></li>
+                <li><a href="reserva.html" class="nav-link">Reservas</a></li>
+                <li><a href="usuario.html" class="nav-link">Usuarios</a></li>
+            </ul>
+        </nav>
+        <div style="display:flex; gap:16px; align-items:center;">
+            <button type="button" class="btn-primary" id="headerLoginBtn" onclick="window.location.href='usuario.html'">Iniciar sesión</button>
+            <button type="button" class="btn-primary" id="headerRegisterBtn" onclick="window.location.href='usuario.html'">Registrarse</button>
+            <button type="button" class="btn-secondary" id="headerLogoutBtn">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main class="rooms-layout">
+        <section class="glass rooms-hero">
+            <p class="breadcrumb"><a href="index.html">Inicio</a> / Seleccionar habitación</p>
+            <h1 class="title-abro" id="roomsTitle">Habitaciones disponibles</h1>
+            <p class="subtitle-urbanist" id="roomsSubtitle">Selecciona el hotel desde la pantalla anterior.</p>
+            <button type="button" class="btn-secondary" id="roomsBackButton">Volver al hotel</button>
+        </section>
+
+        <section class="glass rooms-content">
+            <div class="rooms-list-wrapper">
+                <h2 class="section-title">Habitaciones</h2>
+                <p class="rooms-message" id="roomsMessage">Elige una habitación para continuar con tu reserva.</p>
+                <div class="rooms-grid" id="roomsList"></div>
+            </div>
+            <aside class="rooms-selection" id="selectionPanel">
+                <h2 class="section-title">Servicios y complementos</h2>
+                <p id="selectionEmptyMessage">Selecciona una habitación para ver los servicios disponibles.</p>
+                <div id="servicesContainer" class="services-list" hidden></div>
+                <div class="selection-summary" id="selectionSummary" hidden>
+                    <p><strong>Habitación:</strong> <span id="summaryRoom">—</span></p>
+                    <p><strong>Total estimado:</strong> <span id="summaryTotal">—</span></p>
+                    <p class="summary-note">El importe definitivo se confirmará en el paso siguiente.</p>
+                </div>
+                <button type="button" class="btn-primary" id="continueButton" disabled>Continuar con la reserva</button>
+            </aside>
+        </section>
+
+        <div id="roomsFeedback" class="form-feedback info"></div>
+    </main>
+
+    <script src="../TypeScript/session.js"></script>
+    <script src="../TypeScript/habitaciones.js"></script>
+</body>
+</html>
