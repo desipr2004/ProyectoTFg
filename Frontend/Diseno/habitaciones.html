@@ -45,7 +45,21 @@
         <section class="glass rooms-content">
             <div class="rooms-list-wrapper">
                 <h2 class="section-title">Habitaciones</h2>
-                <p class="rooms-message" id="roomsMessage">Elige una habitación para continuar con tu reserva.</p>
+                <div class="rooms-filters">
+                    <div class="filter-field">
+                        <label for="roomsDateStart">Fecha entrada</label>
+                        <input type="date" id="roomsDateStart" name="roomsDateStart">
+                    </div>
+                    <div class="filter-field">
+                        <label for="roomsDateEnd">Fecha salida</label>
+                        <input type="date" id="roomsDateEnd" name="roomsDateEnd">
+                    </div>
+                    <div class="filter-actions">
+                        <button type="button" class="btn-primary" id="roomsSearchButton">Buscar disponibilidad</button>
+                        <button type="button" class="btn-secondary" id="roomsClearDates">Limpiar fechas</button>
+                    </div>
+                </div>
+                <p class="rooms-message" id="roomsMessage">Elige una habitacion para continuar con tu reserva.</p>
                 <div class="rooms-grid" id="roomsList"></div>
             </div>
             <aside class="rooms-selection" id="selectionPanel">
@@ -64,7 +78,7 @@
         <div id="roomsFeedback" class="form-feedback info"></div>
     </main>
 
-    <script src="../TypeScript/session.js"></script>
-    <script src="../TypeScript/habitaciones.js"></script>
+    <script src="session.js"></script>
+    <script src="habitaciones.js"></script>
 </body>
 </html>

@@ -1,19 +1,27 @@
 package com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.servicio;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Habitacion;
-import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Hotel;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Habitacion;
+import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Hotel;
+import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Reserva;
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoHabitacion;
+import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoReserva;
 
 @Service
 public class HabitacionService {
     
     @Autowired
     private RepoHabitacion habitacionRepo;
+
+    @Autowired
+    private RepoReserva reservaRepo;
 
     /* 
    
@@ -76,5 +84,39 @@ public class HabitacionService {
     public List<Habitacion> buscarPorEstadoYHotel(Habitacion.EstadoHabitacion estado, Hotel hotel){
         return habitacionRepo.findByEstadoAndHotel(estado, hotel);
     }
-}
 
+    /**
+     * Devuelve habitaciones activas y en estado DISPONIBLE para un hotel que no tengan
+     * reservas que se superpongan con el rango indicado. Si las fechas son nulas o invalidas,
+     * se devuelve el listado simple de DISPONIBLE.
+     */
+    public List<Habitacion> buscarDisponiblesPorHotelYRango(Hotel hotel, LocalDate fechaEntrada, LocalDate fechaSalida) {
+        if (hotel == null) {
+            return List.of();
+        }
+
+        List<Habitacion> base = habitacionRepo.findByEstadoAndHotel(Habitacion.EstadoHabitacion.DISPONIBLE, hotel);
+        base.removeIf(h -> !Boolean.TRUE.equals(h.getActiva()));
+
+        if (fechaEntrada == null || fechaSalida == null || !fechaEntrada.isBefore(fechaSalida)) {
+            return base;
+        }
+
+        List<Habitacion> libres = new ArrayList<>();
+        for (Habitacion habitacion : base) {
+            List<Reserva> solapes = reservaRepo.findReservasSuperpuestas(habitacion, fechaEntrada, fechaSalida);
+            boolean ocupada = false;
+            for (Reserva reserva : solapes) {
+                Reserva.EstadoReserva estado = reserva.getEstadoReserva();
+                if (estado == Reserva.EstadoReserva.CONFIRMADA || estado == Reserva.EstadoReserva.PENDIENTE) {
+                    ocupada = true;
+                    break;
+                }
+            }
+            if (!ocupada) {
+                libres.add(habitacion);
+            }
+        }
+        return libres;
+    }
+}

@@ -5,12 +5,16 @@ Content-Type: application/json
 
 ---
 
-## Auth (registro/login)
+NOTA: Las rutas y ejemplos están sincronizados con los controladores del backend (carpeta `src/main/java/.../controlador`). Presta atención a los nombres de campos JSON (p. ej. `contrasenna`, `numPersonas`, `precioPorNoche`) y al formato de fechas (ISO: YYYY-MM-DD).
+
+---
+
+## Auth (registro / login)
 
 1) Registro (crear usuario)
 - Método: POST
 - URL: http://localhost:8080/api/auth/registro
-- Body ejemplo:
+- Body ejemplo (JSON):
 
 ```json
 {
@@ -24,15 +28,14 @@ Content-Type: application/json
 }
 ```
 
-- Respuesta esperada:
+- Respuesta esperada (mapa con mensaje y usuario):
 
 ```json
 {
   "mensaje": "Usuario creado !!",
-  "usuario": { /* objeto usuario */ }
+  "usuario": { /* objeto usuario creado */ }
 }
 ```
-
 
 2) Login
 - Método: POST
@@ -46,7 +49,7 @@ Content-Type: application/json
 }
 ```
 
-- Respuesta esperada (si correcto):
+- Respuesta (si éxito):
 
 ```json
 {
@@ -54,6 +57,20 @@ Content-Type: application/json
   "usuario": { /* objeto usuario */ }
 }
 ```
+
+3) Registro rápido
+- Método: POST
+- URL: http://localhost:8080/api/auth/registro-rapido
+- Body ejemplo mínimo:
+
+```json
+{
+  "email": "maria@example.com",
+  "contrasenna": "pwd123"
+}
+```
+
+Opcional: puedes enviar `nombre`, `apellido`, `telefono`.
 
 ---
 
@@ -67,11 +84,11 @@ Content-Type: application/json
 
 3) Crear usuario
 - POST http://localhost:8080/api/usuarios
-- Body: igual al registro
+- Body: igual que el ejemplo de registro (ver arriba)
 
 4) Actualizar usuario
 - PUT http://localhost:8080/api/usuarios/{id}
-- Body: los campos a actualizar
+- Body: campos a actualizar (ej. `nombre`, `telefono`, `activo`)
 
 5) Eliminar usuario
 - DELETE http://localhost:8080/api/usuarios/{id}
@@ -99,7 +116,7 @@ Content-Type: application/json
   "email": "info@hotelsol.com",
   "descripcion": "Bonito hotel",
   "estrellas": 4,
-  "tipoHotel": "HOTEL_PEQUENNO",
+  "tipoHotel": "HOTEL_PEQUENO",
   "capacidadTotal": 50,
   "desayunoIncluido": true,
   "tieneParking": false,
@@ -130,7 +147,7 @@ Content-Type: application/json
 2) Obtener por id
 - GET http://localhost:8080/api/habitacion/{id}
 
-> Nota: si tu cliente tiene problemas con el path variable prueba también con: http://localhost:8080/api/habitacion?id=1
+Nota: algunos clientes HTTP aceptan `?id=1` como alternativa, pero la ruta oficial es con path variable.
 
 3) Crear habitación
 - POST http://localhost:8080/api/habitacion
@@ -162,11 +179,16 @@ Content-Type: application/json
 6) Habitaciones activas
 - GET http://localhost:8080/api/habitacion/activo
 
+7) Habitaciones disponibles por hotel (filtradas por rango de fechas opcional)
+- GET http://localhost:8080/api/habitacion/hotel/{hotelId}/disponibles?fechaEntrada=YYYY-MM-DD&fechaSalida=YYYY-MM-DD
+
+  - Si se envían fechas, deben estar en formato ISO `YYYY-MM-DD`. Si se envía sólo una fecha (sin la otra), el endpoint devuelve 400 Bad Request.
+
 ---
 
 ## Reservas
 
-1) Listar reservas
+1) Listar reservas (todas)
 - GET http://localhost:8080/api/reservas
 
 2) Obtener reserva por id
@@ -174,22 +196,21 @@ Content-Type: application/json
 
 3) Crear reserva
 - POST http://localhost:8080/api/reservas
-- Body ejemplo:
+- Body ejemplo (los campos `usuario` y `habitacion` deben contener al menos el `id`):
 
 ```json
 {
   "fechaEntrada": "2025-11-01",
   "fechaSalida": "2025-11-04",
   "numPersonas": 2,
-  "precioTotal": 225.0,
   "todoIncluido": false,
   "observaciones": "Ninguna",
-  "estadoReserva": "PENDIETE",
-  "motivoCancelacion": null,
   "usuario": { "id": 1 },
   "habitacion": { "id": 1 }
 }
 ```
+
+Nota: `precioTotal` se calcula habitualmente por la lógica del servicio; no es obligatorio enviarlo.
 
 4) Actualizar reserva
 - PUT http://localhost:8080/api/reservas/{id}
@@ -197,8 +218,34 @@ Content-Type: application/json
 5) Eliminar reserva
 - DELETE http://localhost:8080/api/reservas/{id}
 
+6) Reservas por usuario (id)
+- GET http://localhost:8080/api/reservas/por-usuario/{usuarioId}
+
+7) Reservas por email
+- GET http://localhost:8080/api/reservas/por-email?email=usuario@example.com
+
+---
+
+## Ejemplos curl rápidos
+
+Login (ejemplo):
+
+```bash
+curl -X POST "http://localhost:8080/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"juan@example.com","contrasenna":"password123"}'
+```
+
+Crear reserva (ejemplo):
+
+```bash
+curl -X POST "http://localhost:8080/api/reservas" \
+  -H "Content-Type: application/json" \
+  -d '{"fechaEntrada":"2025-11-01","fechaSalida":"2025-11-04","numPersonas":2,"usuario":{"id":1},"habitacion":{"id":1}}'
+```
+
 ---
 
 ## Notas finales
-- Si quieres que pruebe algunos requests desde aquí y muestre las respuestas reales, confirma y lo hago (esto creará/alterará datos en tu base local).
-- Puedes usar REST Client en Firefox o herramientas como Postman / curl. Si quieres, puedo añadir también ejemplos curl en este archivo.
+- Si quieres que pruebe requests desde aquí y muestre las respuestas reales, confirma y lo ejecuto contra tu entorno local (esto modificará datos en tu base de datos local).
+- Puedo añadir ejemplos en Postman/Collection o más ejemplos curl para otros endpoints si los necesitas.

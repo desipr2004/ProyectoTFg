@@ -1,0 +1,11 @@
+# Ignorar artefactos y carpetas innecesarias en el build de Docker
+target
+**/target
+.git
+.idea
+.vscode
+.m2
+node_modules
+dist
+npm-debug.log
+.DS_Store

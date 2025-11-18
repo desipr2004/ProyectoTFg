@@ -28,8 +28,6 @@
             </ul>
         </nav>
         <div style="display:flex; gap:16px; align-items:center;">
-            <button type="button" class="btn-primary" id="headerLoginBtn">Iniciar sesión</button>
-            <button type="button" class="btn-primary" id="headerRegisterBtn">Registrarse</button>
             <button type="button" class="btn-secondary" id="headerLogoutBtn">Cerrar sesión</button>
         </div>
     </header>
@@ -37,22 +35,8 @@
     <main class="reservation-layout user-layout">
         <section class="glass reservation-summary">
             <p class="breadcrumb"><a href="index.html">Inicio</a> / Usuarios</p>
-            <h1 class="title-abro">Panel de usuarios</h1>
-            <p class="subtitle-urbanist">Inicia sesión para consultar tus reservas o administrar las de otros clientes.</p>
-        </section>
-
-        <section class="glass user-card">
-            <h2 class="section-title">Iniciar sesión</h2>
-            <form id="loginForm" class="user-form">
-                <label for="loginEmail">Correo</label>
-                <input type="email" id="loginEmail" name="loginEmail" required placeholder="usuario@correo.com">
-
-                <label for="loginPassword">Contraseña</label>
-                <input type="password" id="loginPassword" name="loginPassword" required placeholder="Introduce la contraseña">
-
-                <button type="submit" class="btn-primary">Entrar</button>
-                <p class="form-feedback" id="loginFeedback"></p>
-            </form>
+            <h1 class="title-abro">Historial de Reservas</h1>
+            <p class="subtitle-urbanist">Encuentra las reservas que has hecho.</p>
         </section>
 
         <section class="glass user-card" id="clientePanel" style="display:none;">
@@ -93,56 +77,6 @@
                 <input type="email" id="busquedaCorreo" required placeholder="cliente@correo.com">
                 <button type="submit" class="btn-primary">Buscar</button>
             </form>
-            <section class="admin-subpanel">
-                <h3 class="section-title">Crear / actualizar reserva</h3>
-                <form class="user-form admin-form" id="gestionarReservaForm">
-                    <label for="adminReservaId">ID de reserva (solo para actualizar)</label>
-                    <input type="number" id="adminReservaId" min="0" placeholder="Deja vacío para crear">
-
-                    <label for="adminUsuarioId">ID de usuario</label>
-                    <input type="number" id="adminUsuarioId" min="1" required placeholder="Id del cliente">
-
-                    <label for="adminHabitacionId">ID de habitación</label>
-                    <input type="number" id="adminHabitacionId" min="1" required placeholder="Id de la habitación">
-
-                    <label for="adminFechaEntrada">Fecha de entrada</label>
-                    <input type="date" id="adminFechaEntrada" required>
-
-                    <label for="adminFechaSalida">Fecha de salida</label>
-                    <input type="date" id="adminFechaSalida" required>
-
-                    <label for="adminNumPersonas">Número de personas</label>
-                    <input type="number" id="adminNumPersonas" min="1" required>
-
-                    <label for="adminEstado">Estado</label>
-                    <select id="adminEstado">
-                        <option value="PENDIETE">Pendiente</option>
-                        <option value="CONFIRMADA">Confirmada</option>
-                        <option value="CANCELADA">Cancelada</option>
-                        <option value="COMPLETADA">Completada</option>
-                    </select>
-
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="adminTodoIncluido">
-                        Todo incluido
-                    </label>
-
-                    <label for="adminObservaciones">Observaciones</label>
-                    <textarea id="adminObservaciones" rows="2" placeholder="Notas opcionales"></textarea>
-
-                    <div class="admin-form-buttons">
-                        <button type="button" class="btn-primary" id="btnCrearReserva">Crear</button>
-                        <button type="button" class="btn-secondary" id="btnActualizarReserva">Actualizar</button>
-                    </div>
-                </form>
-
-                <form class="user-form inline-form" id="eliminarReservaForm">
-                    <label for="adminEliminarId">Eliminar reserva por ID</label>
-                    <input type="number" id="adminEliminarId" min="1" required placeholder="ID a eliminar">
-                    <button type="submit" class="btn-secondary">Eliminar</button>
-                </form>
-                <p class="form-feedback" id="adminGestionFeedback"></p>
-            </section>
             <p class="form-feedback" id="adminFeedback"></p>
         </section>
 
@@ -164,6 +98,119 @@
                     <tbody id="tablaReservasBody"></tbody>
                 </table>
             </div>
+        </section>
+
+        <section class="glass user-card" id="usuariosPanel" style="display:none;">
+            <div class="panel-header">
+                <h2 class="section-title">Usuarios registrados</h2>
+                <button type="button" class="btn-secondary" id="btnUsuarios">Actualizar</button>
+            </div>
+            <p id="usuariosMensaje">Pulsa en actualizar para cargar los usuarios.</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Correo</th>
+                            <th>Tipo</th>
+                            <th>Activo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUsuariosBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="glass user-card" id="habitacionesPanel" style="display:none;">
+            <div class="panel-header">
+                <h2 class="section-title">Habitaciones (admin)</h2>
+                <button type="button" class="btn-secondary" id="btnHabitaciones">Actualizar</button>
+            </div>
+            <p id="habitacionesMensaje">Pulsa en actualizar para ver todas las habitaciones.</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Numero</th>
+                            <th>Hotel</th>
+                            <th>Precio</th>
+                            <th>Estado</th>
+                            <th>Activa</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaHabitacionesBody"></tbody>
+                </table>
+            </div>
+
+            <h3 class="section-title" style="margin-top:20px;">Crear / actualizar habitacion</h3>
+            <form class="user-form" id="habitacionForm">
+                <input type="hidden" id="habitacionId">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="habitacionNumero">Numero</label>
+                        <input type="text" id="habitacionNumero" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="habitacionHotelId">Hotel</label>
+                        <select id="habitacionHotelId" required>
+                            <option value="">Selecciona un hotel</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="habitacionPrecio">Precio por noche</label>
+                        <input type="number" id="habitacionPrecio" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="habitacionCapacidad">Capacidad</label>
+                        <input type="number" id="habitacionCapacidad" min="1" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="habitacionTipo">Tipo</label>
+                        <select id="habitacionTipo" required>
+                            <option value="INDIVIDUAL">INDIVIDUAL</option>
+                            <option value="DOBLE">DOBLE</option>
+                            <option value="MATRIMONIAL">MATRIMONIAL</option>
+                            <option value="FAMILIAR">FAMILIAR</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="habitacionEstado">Estado</label>
+                        <select id="habitacionEstado" required>
+                            <option value="DISPONIBLE">DISPONIBLE</option>
+                            <option value="OCUPADO">OCUPADO</option>
+                            <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+                        </select>
+                    </div>
+                    <div class="form-field full-row">
+                        <label for="habitacionDescripcion">Descripcion</label>
+                        <input type="text" id="habitacionDescripcion" placeholder="Opcional">
+                    </div>
+                    <div class="form-field checkbox-field">
+                        <label class="checkbox-label"><input type="checkbox" id="habitacionWifi"> Wifi</label>
+                    </div>
+                    <div class="form-field checkbox-field">
+                        <label class="checkbox-label"><input type="checkbox" id="habitacionAire"> Aire acondicionado</label>
+                    </div>
+                    <div class="form-field checkbox-field">
+                        <label class="checkbox-label"><input type="checkbox" id="habitacionCalefaccion"> Calefaccion</label>
+                    </div>
+                    <div class="form-field checkbox-field">
+                        <label class="checkbox-label"><input type="checkbox" id="habitacionBalcon"> Balcon</label>
+                    </div>
+                    <div class="form-field checkbox-field">
+                        <label class="checkbox-label"><input type="checkbox" id="habitacionActiva" checked> Activa</label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Guardar habitacion</button>
+                    <button type="button" class="btn-secondary" id="habitacionReset">Nueva</button>
+                </div>
+                <p class="form-feedback" id="habitacionFeedback"></p>
+            </form>
         </section>
     </main>
 
@@ -193,7 +240,7 @@
         </div>
     </div>
 
-    <script src="../TypeScript/session.js"></script>
-    <script src="../TypeScript/usuario.js"></script>
+    <script src="session.js"></script>
+    <script src="usuario.js"></script>
 </body>
 </html>

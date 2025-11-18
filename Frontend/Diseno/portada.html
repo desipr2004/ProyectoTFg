@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoteles Enanos - Bienvenida</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="landing-body">
+    <main class="landing-page glass">
+        <div class="landing-logo">
+            <svg width="54" height="54" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="20,6 6,18 8,18 8,34 32,34 32,18 34,18" fill="#FFFFFF"></polygon>
+                <rect x="17" y="24" width="6" height="10" rx="2" fill="#C4C4C4"></rect>
+            </svg>
+        </div>
+        <h1 class="landing-title">HOTELES<br>ENANOS</h1>
+        <p class="landing-subtitle">Encuentra tu alojamiento ideal</p>
+
+        <div class="landing-toggle">
+            <button id="landingLoginBtn" class="btn-primary landing-btn active" type="button">Iniciar sesión</button>
+            <button id="landingRegisterBtn" class="btn-primary landing-btn secondary" type="button">Registrarse</button>
+        </div>
+
+        <div class="landing-form-card">
+            <form id="landingLoginForm" class="landing-form">
+                <label class="landing-label" for="landingLoginEmail">Correo electrónico</label>
+                <input class="landing-input" type="email" id="landingLoginEmail" required placeholder="tu@email.com">
+
+                <label class="landing-label" for="landingLoginPassword">Contraseña</label>
+                <input class="landing-input" type="password" id="landingLoginPassword" required placeholder="********">
+
+                <button class="btn-primary landing-submit" type="submit">Entrar</button>
+                <p class="landing-feedback" id="landingLoginFeedback"></p>
+            </form>
+
+            <form id="landingRegisterForm" class="landing-form" style="display:none;">
+                <label class="landing-label" for="landingRegisterNombre">Nombre</label>
+                <input class="landing-input" type="text" id="landingRegisterNombre" placeholder="Nombre">
+
+                <label class="landing-label" for="landingRegisterApellido">Apellido</label>
+                <input class="landing-input" type="text" id="landingRegisterApellido" placeholder="Apellido">
+
+                <label class="landing-label" for="landingRegisterEmail">Correo electrónico</label>
+                <input class="landing-input" type="email" id="landingRegisterEmail" required placeholder="tu@email.com">
+
+                <label class="landing-label" for="landingRegisterTelefono">Teléfono</label>
+                <input class="landing-input" type="tel" id="landingRegisterTelefono" placeholder="+34 600 000 000">
+
+                <label class="landing-label" for="landingRegisterPassword">Contraseña</label>
+                <input class="landing-input" type="password" id="landingRegisterPassword" required placeholder="********">
+
+                <button class="btn-primary landing-submit" type="submit">Crear cuenta</button>
+                <p class="landing-feedback" id="landingRegisterFeedback"></p>
+            </form>
+        </div>
+    </main>
+
+    <script src="../TypeScript/session.js"></script>
+    <script>
+        (function(){
+            const URL_API = (window.location.protocol === "file:" || ["localhost","127.0.0.1","0.0.0.0"].indexOf(window.location.hostname) !== -1)
+                ? "http://localhost:8080/api"
+                : window.location.origin + "/api";
+
+            const SesionApp = window.SesionApp || {};
+
+            function setMode(mode){
+                const loginForm = document.getElementById("landingLoginForm");
+                const registerForm = document.getElementById("landingRegisterForm");
+                const loginBtn = document.getElementById("landingLoginBtn");
+                const registerBtn = document.getElementById("landingRegisterBtn");
+
+                if(loginForm){ loginForm.style.display = mode === "login" ? "block" : "none"; }
+                if(registerForm){ registerForm.style.display = mode === "register" ? "block" : "none"; }
+                if(loginBtn){ loginBtn.classList.toggle("active", mode === "login"); }
+                if(registerBtn){ registerBtn.classList.toggle("active", mode === "register"); }
+            }
+
+            async function login(event){
+                event.preventDefault();
+                const email = document.getElementById("landingLoginEmail").value.trim();
+                const password = document.getElementById("landingLoginPassword").value;
+                const feedback = document.getElementById("landingLoginFeedback");
+                feedback.textContent = "Iniciando sesión...";
+                feedback.className = "landing-feedback info";
+
+                try{
+                    const resp = await fetch(URL_API + "/auth/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: email, contrasenna: password })
+                    });
+                    const data = await resp.json();
+                    if(resp.ok && data.usuario){
+                        feedback.textContent = "Bienvenido, redirigiendo...";
+                        feedback.className = "landing-feedback success";
+                        if(SesionApp && SesionApp.guardarSesion){
+                            SesionApp.guardarSesion(data.usuario);
+                        }
+                        setTimeout(() => window.location.href = "index.html", 600);
+                    }else{
+                        feedback.textContent = data.error || "No se pudo iniciar sesión";
+                        feedback.className = "landing-feedback error";
+                    }
+                }catch(err){
+                    feedback.textContent = "Error de conexión con el servidor";
+                    feedback.className = "landing-feedback error";
+                }
+            }
+
+            async function register(event){
+                event.preventDefault();
+                const nombre = document.getElementById("landingRegisterNombre").value.trim();
+                const apellido = document.getElementById("landingRegisterApellido").value.trim();
+                const email = document.getElementById("landingRegisterEmail").value.trim();
+                const telefono = document.getElementById("landingRegisterTelefono").value.trim();
+                const password = document.getElementById("landingRegisterPassword").value;
+                const feedback = document.getElementById("landingRegisterFeedback");
+                feedback.textContent = "Creando cuenta...";
+                feedback.className = "landing-feedback info";
+
+                try{
+                    const resp = await fetch(URL_API + "/auth/registro-rapido", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            email: email,
+                            contrasenna: password,
+                            nombre: nombre,
+                            apellido: apellido,
+                            telefono: telefono
+                        })
+                    });
+                    const data = await resp.json();
+                    if(resp.ok && data.usuario){
+                        feedback.textContent = "Cuenta creada, redirigiendo...";
+                        feedback.className = "landing-feedback success";
+                        if(SesionApp && SesionApp.guardarSesion){
+                            SesionApp.guardarSesion(data.usuario);
+                        }
+                        setTimeout(() => window.location.href = "index.html", 600);
+                    }else{
+                        feedback.textContent = data.error || "No se pudo registrar el usuario";
+                        feedback.className = "landing-feedback error";
+                    }
+                }catch(err){
+                    feedback.textContent = "Error de conexión con el servidor";
+                    feedback.className = "landing-feedback error";
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", function(){
+                if(SesionApp && SesionApp.obtenerSesion && SesionApp.obtenerSesion()){
+                    window.location.href = "index.html";
+                    return;
+                }
+                const loginBtn = document.getElementById("landingLoginBtn");
+                const registerBtn = document.getElementById("landingRegisterBtn");
+                const loginForm = document.getElementById("landingLoginForm");
+                const registerForm = document.getElementById("landingRegisterForm");
+
+                if(loginBtn){ loginBtn.addEventListener("click", () => setMode("login")); }
+                if(registerBtn){ registerBtn.addEventListener("click", () => setMode("register")); }
+                if(loginForm){ loginForm.addEventListener("submit", login); }
+                if(registerForm){ registerForm.addEventListener("submit", register); }
+
+                setMode("login");
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -49,7 +49,7 @@ public class AuthControlador {
 }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> login) {
+    public Map<String, Object> login(@RequestBody Map<String, String> login, jakarta.servlet.http.HttpSession session) {
     Map<String, Object> res = new HashMap<>();
 
     try{
@@ -61,6 +61,7 @@ public class AuthControlador {
         if(usuarioop.isPresent()){
             Usuario usuario = usuarioop.get();
             if(usuarioService.comprobarContrasenna(email, contrasenna) && usuario.getActivo()) {
+                session.setAttribute("user", usuario);
                 res.put("mensaje", "Login correcto");
                 res.put("usuario", usuario);
                 return res;

@@ -3,6 +3,7 @@ package com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.controla
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.servicio.UsuarioService;
 
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/usuarios")
 public class UsuarioControlador {
     

@@ -74,7 +74,7 @@ public class ReservaService {
 
     private void prepararReserva(Reserva reserva){
         if (reserva.getEstadoReserva() == null){
-            reserva.setEstadoReserva(Reserva.EstadoReserva.PENDIETE);
+            reserva.setEstadoReserva(Reserva.EstadoReserva.PENDIENTE);
         }
 
         reserva.setHabitacion(cargarHabitacion(reserva));
@@ -101,7 +101,6 @@ public class ReservaService {
     }
 
     private BigDecimal calcularPrecio(Reserva reserva){
-        int personas = Math.max(reserva.getNumeroPersonas(), 1);
         int noches = Math.max(reserva.calculoNoches(), 1);
 
         BigDecimal precioBase = PRECIO_BASE_POR_PERSONA;
@@ -109,9 +108,8 @@ public class ReservaService {
             precioBase = reserva.getHabitacion().getPrecioPorNoche();
         }
 
-        BigDecimal total = precioBase
-                .multiply(BigDecimal.valueOf(personas))
-                .multiply(BigDecimal.valueOf(noches));
+        // El precio base se calcula por habitacion y noche (no por persona)
+        BigDecimal total = precioBase.multiply(BigDecimal.valueOf(noches));
 
         if (Boolean.TRUE.equals(reserva.gettodoIncluido())){
             total = total.multiply(BigDecimal.valueOf(1.2));

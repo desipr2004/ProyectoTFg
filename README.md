@@ -1,3 +1,185 @@
+## Despliegue exacto con Docker Compose
+
+### Protecci��n de rutas (nuevo)
+- El backend protege todas las rutas `"/api/**"` mediante un interceptor de sesi��n; solo quedan p��blicas `"/api/auth/**"` y `/error`.
+- El login (`POST /api/auth/login`) ahora guarda el usuario en `HttpSession`; si no hay sesi��n, se responde `401 Unauthorized`.
+- No requiere cambios en BD; el frontend debe redirigir al login si no detecta usuario/sesi��n.
+
+Sigue estos pasos para levantar backend, frontend y base de datos conectados y sin errores:
+
+### 1. Prepara los archivos necesarios
+- `Dockerfile` en la raíz para el backend (usa el JAR generado en `target/`).
+- `Dockerfile` en `Frontend/Diseno` para el frontend (usa Nginx).
+- `docker-compose.yml` en la raíz del proyecto.
+
+### 2. Configura la base de datos en el backend
+En `src/main/resources/application.properties`:
+```properties
+spring.datasource.url=jdbc:mysql://db:3306/hotelesenanos
+spring.datasource.username=root
+spring.datasource.password=example
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+```
+
+### 3. Ejemplo de archivo docker-compose.yml
+Coloca este archivo en la raíz del proyecto:
+```yaml
+version: '3.8'
+services:
+   backend:
+      build:
+         context: .
+         dockerfile: Dockerfile
+      ports:
+         - "8080:8080"
+      depends_on:
+         - db
+      environment:
+         SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/hotelesenanos
+         SPRING_DATASOURCE_USERNAME: root
+         SPRING_DATASOURCE_PASSWORD: example
+   frontend:
+      build:
+         context: ./Frontend/Diseno
+         dockerfile: Dockerfile
+      ports:
+         - "4173:80"
+   db:
+      image: mysql:8.0
+      environment:
+         MYSQL_ROOT_PASSWORD: example
+         MYSQL_DATABASE: hotelesenanos
+      ports:
+         - "3306:3306"
+      volumes:
+         - db_data:/var/lib/mysql
+volumes:
+   db_data:
+```
+
+### 4. Compila el backend
+```powershell
+./mvnw clean package
+```
+
+### 5. Levanta todos los servicios
+```powershell
+docker-compose up --build
+```
+
+### 6. Accede a la aplicación
+- Frontend: `http://localhost:4173`
+- Backend: `http://localhost:8080`
+
+---
+## Despliegue completo con Docker Compose
+
+Puedes levantar el backend y el frontend juntos usando Docker Compose. Sigue estos pasos:
+
+### 1. Crear el archivo `docker-compose.yml`
+
+Crea un archivo llamado `docker-compose.yml` en la raíz del proyecto con el siguiente contenido:
+
+```yaml
+version: '3.8'
+services:
+   backend:
+      build:
+         context: .
+         dockerfile: Dockerfile
+      ports:
+         - "8080:8080"
+      depends_on:
+         - db
+      environment:
+         SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/hotelesenanos
+         SPRING_DATASOURCE_USERNAME: root
+         SPRING_DATASOURCE_PASSWORD: example
+   frontend:
+      build:
+         context: ./Frontend/Diseno
+         dockerfile: Dockerfile
+      ports:
+         - "4173:80"
+   db:
+      image: mysql:8.0
+      environment:
+         MYSQL_ROOT_PASSWORD: example
+         MYSQL_DATABASE: hotelesenanos
+      ports:
+         - "3306:3306"
+      volumes:
+         - db_data:/var/lib/mysql
+volumes:
+   db_data:
+```
+
+### 2. Levantar los servicios
+
+Ejecuta en la raíz del proyecto:
+
+```powershell
+docker-compose up --build
+```
+
+Esto levantará el backend en `http://localhost:8080`, el frontend en `http://localhost:4173` y la base de datos MySQL en el contenedor `db`.
+
+### 3. Notas adicionales
+- Puedes modificar las variables de entorno según tu configuración.
+- Asegúrate de que las llamadas del frontend al backend apunten a la URL correcta (`http://localhost:8080`).
+- Los datos de la base de datos se guardan en un volumen persistente `db_data`.
+
+---
+## Despliegue del Frontend con Docker
+
+Puedes desplegar el frontend como un contenedor independiente usando Nginx. Sigue estos pasos:
+
+### 1. Crear el archivo Dockerfile para el frontend
+
+Crea un archivo llamado `Dockerfile` dentro de la carpeta `Frontend/Diseno` con el siguiente contenido:
+
+```dockerfile
+FROM nginx:alpine
+COPY . /usr/share/nginx/html
+EXPOSE 80
+```
+
+### 2. Construir la imagen Docker del frontend
+
+Abre una terminal en la carpeta `Frontend/Diseno` y ejecuta:
+
+```powershell
+docker build -t hoteles-enanos-frontend .
+```
+
+### 3. Ejecutar el contenedor del frontend
+
+```powershell
+docker run -p 4173:80 hoteles-enanos-frontend
+```
+
+El frontend estará disponible en `http://localhost:4173`.
+
+### 4. Notas adicionales
+- Asegúrate de que las llamadas a la API del backend apunten a la URL correcta (`http://localhost:8080` por defecto).
+- Puedes personalizar la configuración de Nginx creando un archivo `nginx.conf` si necesitas reglas avanzadas.
+
+---
+---
+# Portada
+
+**Proyecto:** Hoteles Enanos — Plataforma de gestión de hoteles y reservas
+
+**Autor / Equipo:** (indicar nombre/s y correo)
+
+**Curso / TFG:** Trabajo Fin de Grado — Desarrollo de Software
+
+**Fecha:** 2025-11-17
+
+Breve descripción: aplicación web full-stack (Spring Boot + MySQL + Frontend estático) para gestión de hoteles, habitaciones y reservas. Este README integra la memoria técnica y los vínculos a recursos, diagramas y demostraciones.
+
+---
+
 # 📑 Índice
 
 1. [Introducción y Objetivos](#1-introducción-y-objetivos)
@@ -70,6 +252,10 @@ El sistema está dirigido a:
 
 ## 1.5. Justificación
 La digitalización de la gestión hotelera permite optimizar recursos, reducir errores humanos y mejorar la satisfacción del cliente. Este proyecto, al estar basado en tecnologías modernas como Spring Boot y un frontend web responsive construido con HTML, CSS y JavaScript, garantiza una solución robusta, escalable y adaptable a diferentes necesidades.
+
+## Antecedentes
+
+En los últimos años han proliferado soluciones para la gestión hotelera que buscan cubrir desde la reserva hasta la facturación y analítica. Este proyecto parte del análisis de herramientas existentes (Sistemas PMS comerciales y proyectos open-source de gestión hotelera) y adapta ideas clave a un entorno educativo y prototípico: enfoque modular, API REST centralizada y frontend estático consumiendo la API. Los requisitos funcionales se han priorizado para cubrir la operativa mínima necesaria en instalaciones pequeñas y permitir extensión futura.
 
 ## 1.6. Alcance del Proyecto
 El alcance incluye el desarrollo del backend (API REST), el diseño de la base de datos, la implementación de la lógica de negocio, la integración con un frontend móvil y la documentación completa del sistema. No se incluye el desarrollo de la infraestructura de despliegue en la nube, aunque se proporcionan recomendaciones para ello.
@@ -1048,53 +1234,111 @@ O bien:
 En resumen, la API REST de este proyecto está diseñada para ser intuitiva, robusta y fácil de consumir, permitiendo la integración con cualquier cliente que hable HTTP y JSON.
 
 
+
+
+
 # 7. Frontend Web
 
-El frontend se ha rediseñado como una interfaz web responsiva que funciona con cualquier navegador moderno. El objetivo fue disponer de un material fácil de mostrar en clase sin necesidad de emuladores y manteniendo una experiencia cuidada mediante glassmorphism, tipografías personalizadas y animaciones suaves.
+El frontal de la web está pensado para que cualquier persona pueda reservar una habitación de hotel de forma sencilla, desde el móvil o el ordenador. Todo funciona en el navegador, sin instalar nada especial.
 
-## 7.1. Estructura de la Interfaz
-- **`index.html`**: Landing page con el hero principal, listado de hoteles (`#hotelsList`) y llamadas a la acción. Desde aquí se navega a la selección de habitaciones con los parámetros `hotelId` y `hotelNombre` en la URL. También incorpora modales de inicio de sesión y registro para autenticarse sin abandonar la portada.
-- **`habitaciones.html`**: Muestra todas las habitaciones disponibles de un hotel concreto consumiendo el endpoint `/api/habitacion/hotel/{hotelId}/disponibles`. Incluye tarjetas con capacidad, servicios y un panel lateral para activar complementos (todo incluido, parking, desayuno, etc.).
-- **`reserva.html`**: Pantalla final de confirmación con resumen de la selección, formulario accesible y cálculo automático del precio total según personas, noches y servicios adicionales. También ofrece navegación inversa al listado anterior (`redirect` en la query string).
-- **`usuario.html`**: Nuevo panel para iniciar sesión como cliente o administrador. Incluye un registro rápido (correo, nombre/apellido opcionales, teléfono y contraseña) que redirige a la lista de hoteles y un botón de historial para que cada usuario consulte sus reservas. La sesión se almacena en `localStorage`, por lo que al volver a la web se mantienen las opciones de usuario y, si se crea una reserva desde `reserva.html`, se redirige automáticamente al historial. En este panel los clientes pueden eliminar sus propias reservas, mientras que el administrador dispone de formularios para crear, actualizar y eliminar reservas, además de listarlas o buscarlas por ID/correo; de esta forma se ejercitan todos los endpoints críticos del backend.
+## 7.1. Diseño de la Interfaz
 
-Toda la interfaz comparte el mismo `styles.css`, iconografía SVG propia y componentes reutilizables (botones `btn-primary`, tarjetas con clase `glass`, etc.), lo que facilita mantener el estilo en otras páginas que se añadan.
+La interfaz está pensada para ser clara, moderna y fácil de usar. Los colores suaves y los botones grandes ayudan a que todo sea visible y cómodo, tanto en ordenador como en móvil.
 
-## 7.2. Integración con Backend
-Los archivos `habitaciones.js`, `reserva.js`, `usuario.js` y `home-auth.js` son autoejecutables que leen los parámetros de la URL, construyen las rutas del backend y realizan peticiones `fetch` con JSON. Por ejemplo, al precargar una habitación se hace:
+**Ejemplo visual:**
 
-```javascript
-fetch(HABITACION_URL, { headers: { 'Accept': 'application/json' } })
-  .then(function (response) {
-    if (!response.ok) { throw new Error('Error ' + response.status); }
-    return response.json();
-  })
-  .then(function (data) {
-    selectedRoom = data;
-    habitacionIdInput.value = data.id;
-    renderSeleccion();
-    actualizarPrecioTotal();
-  });
-```
+> [Buscador de hoteles] [Granada] [Buscar]
+> 
+> Resultados:
+> - Hotel Alhambra Palace
+> - Hotel Granada Center
+> - Hotel Los Enanos
 
-Cuando el formulario se envía, `reserva.js` genera el payload completo (fechas, número de personas, `todoIncluido`, observaciones, estado) y lo envía al endpoint `POST /api/reservas`, mostrando mensajes de éxito o error en el componente `formFeedback`. Además, se recalcula el precio en tiempo real combinando el precio por noche de la habitación con recargos de servicios:
+Cada página tiene una función:
 
-```javascript
-function actualizarPrecioTotal() {
-  var personas = parseNumber(form.numPersonas.value, 0);
-  if (!personas || !selectedRoom) { precioTotalInput.value = ''; return; }
-  var total = personas * calcularNoches() * getPrecioPorNoche();
-  if (hasService('DESAYUNO_EXTRA')) { total += DESAYUNO_EXTRA_COSTE * personas * calcularNoches(); }
-  if (todoIncluidoCheckbox.checked) { total = total * (1 + RECARGO_TODO_INCLUIDO); }
-  precioTotalInput.value = total.toFixed(2);
-}
-```
+- **Página principal (`index.html`)**: Muestra el buscador y la lista de hoteles. Puedes filtrar por nombre y ver detalles de cada hotel.
+- **Habitaciones (`habitaciones.html`)**: Al seleccionar un hotel, ves las habitaciones disponibles, con información clara: capacidad, servicios extra (desayuno, parking, etc.), precio y disponibilidad. Ejemplo:
+   > Habitación doble | 2 personas | Desayuno incluido | 60 €/noche
+- **Reserva (`reserva.html`)**: Al elegir una habitación, ves un resumen de tu selección, el precio total y un formulario sencillo para tus datos. Ejemplo:
+   > Fechas: 10-12 diciembre | Precio total: 130 € | Nombre: Juan Pérez | Email: juanperez@email.com
+- **Usuario (`usuario.html`)**: Panel donde puedes ver tus reservas, cambiar tus datos o cancelar/modificar reservas. Si eres administrador, puedes gestionar todas las reservas y usuarios.
 
-## 7.3. Funcionalidades Principales
-- **Selección guiada**: Los parámetros `hotelId`, `habitacionId`, `servicios` y `redirect` viajan entre pantallas para que el usuario nunca pierda su contexto.
-- **Cálculo transparente**: El precio total muestra de inmediato cómo afectan las noches, las personas y los servicios premium antes de confirmar la reserva.
-- **Validaciones accesibles**: Se utilizan etiquetas y mensajes en castellano, campos `required`, límites en observaciones y componentes `aria-live` para feedback.
-- **Consumo real de la API**: Todas las operaciones (listar habitaciones, crear reservas) funcionan con los endpoints del backend sin mocks, lo que demuestra la integración extremo a extremo del proyecto.
+El diseño se adapta automáticamente a cualquier pantalla, mostrando menús y botones accesibles.
+
+## 7.2. Integración
+
+La web está conectada directamente con el sistema del hotel (backend). Esto significa que todo lo que ves está actualizado en tiempo real: hoteles, habitaciones, precios y reservas.
+
+**Ejemplo de integración:**
+
+Cuando buscas "Granada", la web pregunta al sistema por los hoteles que coinciden y te muestra los resultados al momento. Si reservas una habitación, el sistema guarda tu reserva y te envía la confirmación.
+
+> Usuario busca "Granada" → El sistema responde con los hoteles disponibles.
+> Usuario elige habitación y fechas → El sistema calcula el precio y confirma la reserva.
+
+Si hay algún error (por ejemplo, fechas no válidas o habitación ocupada), la web te avisa y te ayuda a corregirlo.
+
+## 7.4. Funcionalidades Principales
+
+La web permite realizar todas las acciones necesarias para reservar y gestionar habitaciones de hotel:
+
+- **Buscar hoteles y ver detalles:** Escribe el nombre de la ciudad o el hotel y obtén resultados al instante.
+   > Ejemplo: Buscas "Granada" y ves todos los hoteles disponibles en esa ciudad.
+- **Elegir habitación y añadir servicios extra:** Selecciona la habitación que prefieras y añade servicios como desayuno, parking o todo incluido.
+   > Ejemplo: Eliges una habitación doble y añades desayuno extra.
+- **Ver el precio total antes de reservar:** El sistema calcula el precio según las noches, personas y servicios añadidos.
+   > Ejemplo: 60 € x 2 noches + 10 € desayuno = 130 €
+- **Registrarte y ver tu historial:** Si te registras, puedes guardar tus reservas y consultarlas cuando quieras.
+   > Ejemplo: Juan Pérez entra en su panel y ve todas sus reservas pasadas y futuras.
+- **Cancelar o modificar reservas:** Si cambias de planes, puedes cancelar o modificar tu reserva fácilmente desde el panel de usuario.
+   > Ejemplo: Juan cancela su reserva para el 12 de diciembre.
+- **Gestión para administradores:** Los administradores pueden ver y gestionar todas las reservas y usuarios desde un panel especial.
+   > Ejemplo: El administrador elimina una reserva duplicada.
+
+Todo está pensado para que el usuario no se pierda y siempre sepa qué hacer. Los mensajes y botones están en español y son claros.
+
+
+## 7.5. Ejemplo de uso
+
+### Ejemplo 1: Buscar un hotel
+
+Supongamos que quieres ir a Granada. En la página principal, escribes "Granada" en el buscador y aparecen los hoteles disponibles:
+
+> **Buscador:** [Granada] [Buscar]
+
+> **Resultados:**
+> - Hotel Alhambra Palace
+> - Hotel Granada Center
+> - Hotel Los Enanos
+
+Solo tienes que hacer clic en el hotel que te interesa para ver sus habitaciones.
+
+### Ejemplo 2: Reservar una habitación
+
+Imagina que eliges el "Hotel Los Enanos". Ves varias habitaciones:
+
+> **Habitación doble**
+> - Capacidad: 2 personas
+> - Servicios: Desayuno incluido, Parking
+> - Precio: 60 €/noche
+
+Seleccionas las fechas (por ejemplo, del 10 al 12 de diciembre), añades el desayuno extra y ves el precio total:
+
+> **Precio total:** 60 € x 2 noches + 10 € desayuno extra = 130 €
+
+Rellenas tus datos:
+
+> Nombre: Juan Pérez
+> Email: juanperez@email.com
+> Teléfono: 600123456
+
+Pulsas "Confirmar reserva" y recibes el mensaje:
+
+> "¡Reserva realizada con éxito!"
+
+Luego puedes ver tu reserva en el panel de usuario y, si lo necesitas, modificarla o cancelarla.
+
+Así de fácil: todo el proceso es rápido y pensado para cualquier persona, sin complicaciones técnicas.
 
 
 # 8. Pruebas
@@ -1305,6 +1549,75 @@ Tambien se puede ejecutar el `main` de la clase desde el IDE.
 
 
 ---
+
+
+## Despliegue con Docker
+
+A continuación se detallan los pasos para desplegar la aplicación backend con Docker:
+
+### 1. Crear el archivo Dockerfile
+
+Crea un archivo llamado `Dockerfile` en la raíz del proyecto con el siguiente contenido:
+
+```dockerfile
+FROM openjdk:17-jdk-alpine
+VOLUME /tmp
+COPY target/hoteles-enanos-applications-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+```
+
+### 2. Compilar el proyecto
+
+Asegúrate de que el proyecto esté compilado y el JAR generado en la carpeta `target`:
+
+```powershell
+./mvnw clean package
+```
+
+### 3. Construir la imagen Docker
+
+```powershell
+docker build -t hoteles-enanos-app .
+```
+
+### 4. Ejecutar el contenedor
+
+```powershell
+docker run -p 8080:8080 hoteles-enanos-app
+```
+
+La aplicación estará disponible en `http://localhost:8080`.
+
+### 5. Notas adicionales
+- Si usas base de datos externa, configura las variables de entorno en el contenedor.
+- Puedes añadir instrucciones para el frontend si quieres servirlo desde Docker o desde un servidor web aparte.
+- Revisa la configuración de `application.properties` para adaptar la conexión a la base de datos en producción.
+
+---
+
+## Resultados
+
+Aquí se debe añadir el enlace a la demostración desplegada (si existe) y/o el vídeo-demostración. Ejemplos de forma de incluirlo:
+
+- Enlace a la demo en vivo: https://ejemplo-hosting.com (sustituir por la URL real)
+- Vídeo demostración: https://youtu.be/ID_DEL_VIDEO (sustituir por el enlace real)
+
+Si no hay demo pública, incluir instrucciones para reproducir localmente (ver sección 9 - Instalación) y un script breve para poblar la base de datos de ejemplo (`data.sql` ya incluido en `src/main/resources/`).
+
+## Conclusiones y nuevas propuestas
+
+Resumen de conclusiones:
+
+- El prototipo cumple con los requisitos funcionales básicos: gestión de usuarios, hoteles, habitaciones y reservas, con control de solapamiento de reservas.
+- Arquitectura adecuada para ampliación: separación por capas (controlador, servicio, repositorio) y API REST para integrar futuros clientes (móvil, terceros).
+
+Propuestas de mejora / trabajo futuro:
+
+1. Integrar pasarela de pagos y facturación.
+2. Añadir panel de analítica/estadísticas para administradores.
+3. Desplegar en contenedor Docker y orquestación (Kubernetes) para producción.
+4. Automatizar pipelines CI/CD y pruebas end-to-end.
+
 
 # 10. Anexos y Ejemplos Prácticos
 

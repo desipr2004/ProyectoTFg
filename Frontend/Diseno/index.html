@@ -44,14 +44,7 @@
                 <button type="submit" class="btn-primary">Buscar</button>
             </form>
         </section>
-        <section class="hotels-list" id="hotelsList">
-            <article class="hotel-card glass">
-                <div class="hotel-info">
-                    <h2 class="hotel-title">Cargando hoteles...</h2>
-                    <p class="hotel-desc">Estamos conectándonos con la API para mostrarte toda la disponibilidad.</p>
-                </div>
-            </article>
-        </section>
+        <section class="hotels-list" id="hotelsList"></section>
     </main>
 
     <div class="modal-overlay" id="homeLoginModal">
@@ -100,8 +93,8 @@
     <footer class="glass footer">
         <p class="footer-text">&copy; 2025 Hoteles Enanos. Todos los derechos reservados.</p>
     </footer>
-    <script src="../TypeScript/session.js"></script>
-    <script src="../TypeScript/home-auth.js"></script>
+    <script src="session.js"></script>
+    <script src="home-auth.js"></script>
     <script>
         (function () {
             const hotelsList = document.getElementById('hotelsList');
@@ -296,38 +289,6 @@
                 return { hasRange: true, start: startDate, end: endDate };
             };
 
-            const HOTEL_IMAGES = {
-                madrid: 'images/Hotel Madrid.png',
-                barcelona: 'images/Norte.png',
-                granada: 'images/Granada.png',
-                sevilla: 'images/Pueblo.png',
-                valencia: 'images/Salamanca.png',
-                bilbao: 'images/cABAÑA.png',
-                malaga: 'images/chalet.png',
-                alicante: 'images/Norte.png',
-                cordoba: 'images/Pueblo.png',
-                salamanca: 'images/Salamanca.png',
-                zaragoza: 'images/Zaragoza.png',
-                murcia: 'images/cABAÑA.png'
-            };
-
-            const getHotelImage = (hotel) => {
-                if (hotel && hotel.imagenUrl) {
-                    return hotel.imagenUrl;
-                }
-
-                const nombre = normalizeText(hotel?.nombre);
-                const ciudad = normalizeText(hotel?.ciudad);
-
-                for (const key in HOTEL_IMAGES) {
-                    if (nombre.includes(key) || ciudad.includes(key)) {
-                        return HOTEL_IMAGES[key];
-                    }
-                }
-
-                return 'images/Hotel Madrid.png';
-            };
-
             const buildAmenities = (hotel) => {
                 const amenities = [];
 
@@ -363,6 +324,42 @@
                         </div>
                     </article>
                 `;
+            };
+
+            const getHotelImage = (hotel) => {
+                if (hotel && hotel.imagenUrl) {
+                    return hotel.imagenUrl;
+                }
+
+                const mapaImagenes = {
+                    madrid: 'Hotel Madrid.png',
+                    barcelona: 'Barcelona.png',
+                    granada: 'Granada.png',
+                    sevilla: 'Sevilla.png',
+                    valencia: 'Salamanca.png',
+                    bilbao: 'Norte.png',
+                malaga: 'chalet.png',
+                    alicante: 'Alicante.png',
+                    cordoba: 'Cordoba.png',
+                    salamanca: 'Salamanca.png',
+                    zaragoza: 'Zaragoza.png',
+                    murcia: 'Pueblo.png',
+                    norte: 'Norte.png',
+                    pueblo: 'Pueblo.png',
+                    chalet: 'chalet.png',
+                    cabana: 'cABAÑA.png'
+                };
+
+                const nombre = normalizeText(hotel?.nombre).replace(/\s+/g, '');
+                const ciudad = normalizeText(hotel?.ciudad).replace(/\s+/g, '');
+
+                for (const clave in mapaImagenes) {
+                    if (nombre.includes(clave) || ciudad.includes(clave)) {
+                        return `images/${mapaImagenes[clave]}`;
+                    }
+                }
+
+                return 'images/Barcelona.png';
             };
 
             const createHotelCard = (hotel) => {
@@ -414,19 +411,6 @@
                 amenities.innerHTML = `<strong>Servicios:</strong> ${escapeHTML(buildAmenities(hotel))}`;
                 info.appendChild(amenities);
 
-                const capacityTitle = buildCapacityTitle(hotel);
-                const breakfastTitle = hotel?.desayunoIncluido ? 'Desayuno incluido' : 'Sin desayuno';
-                const parkingTitle = hotel?.tieneParking ? 'Parking disponible' : 'Sin parking';
-
-                const icons = document.createElement('div');
-                icons.className = 'hotel-icons';
-                icons.innerHTML = `
-                    <span class="icon-bed" title="${escapeHTML(capacityTitle)}"></span>
-                    <span class="icon-wifi" title="${escapeHTML(breakfastTitle)}"></span>
-                    <span class="icon-pool" title="${escapeHTML(parkingTitle)}"></span>
-                `;
-                info.appendChild(icons);
-
                 const button = document.createElement('button');
                 button.className = 'btn-primary';
                 button.type = 'button';
@@ -435,7 +419,7 @@
                     const roomsUrl = new URL('habitaciones.html', window.location.href);
 
                     if (hotel?.id) {
-                        roomsUrl.searchParams.set('hotelId', hotel.id);
+                        roomsUrl.searchParams.set('idHotel', hotel.id);
                     }
 
                     if (hotel?.nombre) {
@@ -565,4 +549,5 @@
     </script>
 </body>
 </html>
+
 

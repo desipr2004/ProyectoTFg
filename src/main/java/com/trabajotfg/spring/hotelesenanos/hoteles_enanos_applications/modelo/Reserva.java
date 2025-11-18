@@ -54,11 +54,11 @@ public class Reserva {
     private Habitacion habitacion;
 
     public enum EstadoReserva{
-        PENDIETE, CONFIRMADA, CANCELADA, COMPLETADA
+        PENDIENTE, CONFIRMADA, CANCELADA, COMPLETADA
     }
 
     public Reserva(){
-        this.estadoReserva = EstadoReserva.PENDIETE;
+        this.estadoReserva = EstadoReserva.PENDIENTE;
         this.todoIncluido = false;
     }
 
@@ -69,7 +69,7 @@ public class Reserva {
         this.numPersonas = numPersonas;
         this.usuario = usuario;
         this.habitacion = habitacion;
-        this.estadoReserva = EstadoReserva.PENDIETE;
+        this.estadoReserva = EstadoReserva.PENDIENTE;
         this.todoIncluido = false;
     }
 
