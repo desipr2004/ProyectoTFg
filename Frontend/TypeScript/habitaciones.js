@@ -454,5 +454,3 @@
     sincronizarFechasEnInputs();
     cargarHabitaciones();
 })();
-
-

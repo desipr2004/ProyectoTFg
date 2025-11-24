@@ -204,7 +204,7 @@
 
         var personas = Math.max(convertirNumero(formularioReserva.numPersonas.value, 1), 1);
         var noches = Math.max(calcularTotalNoches(), 1);
-        var total = noches * obtenerPrecioPorNoche();
+        var total = noches * obtenerPrecioPorNoche() * personas;
 
         if (tieneServicio('DESAYUNO_EXTRA')) {
             total += COSTE_DESAYUNO_EXTRA * personas * noches;
@@ -225,7 +225,7 @@
     function cargarHabitacionSeleccionada() {
         if (!URL_HABITACION) {
             mostrarAvisoReserva('No se ha seleccionado ninguna habitacion. Vuelve al paso anterior.', 'error');
-            formularioReserva.querySelector('button[type=\"submit\"]').disabled = true;
+            formularioReserva.querySelector('button[type="submit"]').disabled = true;
             return;
         }
 
@@ -259,7 +259,7 @@
             })
             .catch(function () {
                 mostrarAvisoReserva('No se pudo cargar la habitacion seleccionada. Vuelve al paso anterior.', 'error');
-                formularioReserva.querySelector('button[type=\"submit\"]').disabled = true;
+                formularioReserva.querySelector('button[type="submit"]').disabled = true;
             });
     }
 
@@ -313,10 +313,7 @@
             return;
         }
 
-        if (!usuarioEnSesion || !usuarioEnSesion.id) {
-            mostrarAvisoReserva('Inicia sesion antes de confirmar la reserva.', 'error');
-            return;
-        }
+        // Permitimos crear reservas sin sesión (usuario anónimo)
 
         var personasSeleccionadas = convertirNumero(formularioReserva.numPersonas.value, 0);
         if (!personasSeleccionadas) {
@@ -333,7 +330,7 @@
             observaciones: formularioReserva.observaciones.value || null,
             estadoReserva: formularioReserva.estadoReserva.value || 'PENDIENTE',
             motivoCancelacion: formularioReserva.motivoCancelacion.value || null,
-            usuario: { id: Number(usuarioEnSesion.id) },
+            usuario: usuarioEnSesion && usuarioEnSesion.id ? { id: Number(usuarioEnSesion.id) } : null,
             habitacion: { id: Number(habitacionElegida.id) }
         };
 
@@ -393,9 +390,3 @@
     cargarHabitacionSeleccionada();
 
 })();
-
-
-
-
-
-

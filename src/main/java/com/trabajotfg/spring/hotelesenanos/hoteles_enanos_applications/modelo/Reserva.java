@@ -226,9 +226,12 @@ public class Reserva {
             return BigDecimal.ZERO;
         }
 
-        int noches = calculoNoches(); //Se guarda en noches el resultado del metodo
+        int noches = Math.max(calculoNoches(), 1); //Se guarda en noches el resultado del metodo
+        int personas = Math.max(numPersonas, 1);
         BigDecimal precioPorNoche = habitacion.getPrecioPorNoche(); //Se guarda el precio de la habitacion por noche 
-        BigDecimal precioHabitacion = precioPorNoche.multiply(BigDecimal.valueOf(noches));//se multiplica el precio por noche por la cantidad de noches
+        BigDecimal precioHabitacion = precioPorNoche
+                .multiply(BigDecimal.valueOf(noches))
+                .multiply(BigDecimal.valueOf(personas));//se multiplica por noches y numero de personas
 
         //si hay todo incluido, se aumenta un 20%
         if(todoIncluido){

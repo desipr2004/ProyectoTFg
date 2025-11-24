@@ -102,14 +102,17 @@ public class ReservaService {
 
     private BigDecimal calcularPrecio(Reserva reserva){
         int noches = Math.max(reserva.calculoNoches(), 1);
+        int personas = Math.max(reserva.getNumeroPersonas(), 1);
 
         BigDecimal precioBase = PRECIO_BASE_POR_PERSONA;
         if (reserva.getHabitacion() != null && reserva.getHabitacion().getPrecioPorNoche() != null){
             precioBase = reserva.getHabitacion().getPrecioPorNoche();
         }
 
-        // El precio base se calcula por habitacion y noche (no por persona)
-        BigDecimal total = precioBase.multiply(BigDecimal.valueOf(noches));
+        // Precio base por persona y noche
+        BigDecimal total = precioBase
+                .multiply(BigDecimal.valueOf(noches))
+                .multiply(BigDecimal.valueOf(personas));
 
         if (Boolean.TRUE.equals(reserva.gettodoIncluido())){
             total = total.multiply(BigDecimal.valueOf(1.2));

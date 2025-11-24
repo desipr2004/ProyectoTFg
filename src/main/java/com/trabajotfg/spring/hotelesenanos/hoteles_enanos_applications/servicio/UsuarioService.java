@@ -71,7 +71,7 @@ public class UsuarioService {
 
         Usuario usuarioEncontrado = usuario.get();
 
-        //Verificar la contraseña
+        //Comprueba la contraseña
         if(!contrasennaCoincide(contrasenna, usuarioEncontrado)){
             throw new Exception("Contraseña incorrecta");
         }

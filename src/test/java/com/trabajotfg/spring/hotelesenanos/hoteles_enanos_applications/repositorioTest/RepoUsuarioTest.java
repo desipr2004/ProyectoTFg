@@ -15,7 +15,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Usuario;
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoUsuario;
 
-@DataJpaTest(properties = {"spring.jpa.hibernate.ddl-auto=create-drop"})
+@DataJpaTest(properties = {
+    "spring.jpa.hibernate.ddl-auto=create-drop",
+    "spring.sql.init.mode=never"
+})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class RepoUsuarioTest {
     @Autowired

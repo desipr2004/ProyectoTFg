@@ -343,9 +343,9 @@ async function cargarHotelesAdmin(){
     if(!selectHotel){
         return;
     }
-    selectHotel.innerHTML = '<option value=\"\">Selecciona un hotel</option>';
+    selectHotel.innerHTML = '<option value="">Selecciona un hotel</option>';
     try{
-        // Preferimos hoteles activos si el endpoint est�� disponible
+        // Preferimos hoteles activos si el endpoint está disponible
         var respuesta = await fetch(URL_API + "/hotel/activos");
         if(!respuesta.ok){
             respuesta = await fetch(URL_API + "/hotel");
