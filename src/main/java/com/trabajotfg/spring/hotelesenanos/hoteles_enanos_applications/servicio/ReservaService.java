@@ -2,6 +2,7 @@ package com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.servicio
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -73,6 +74,7 @@ public class ReservaService {
     }
 
     private void prepararReserva(Reserva reserva){
+        validarFechas(reserva);
         if (reserva.getEstadoReserva() == null){
             reserva.setEstadoReserva(Reserva.EstadoReserva.PENDIENTE);
         }
@@ -80,6 +82,17 @@ public class ReservaService {
         reserva.setHabitacion(cargarHabitacion(reserva));
         reserva.setUsuario(cargarUsuario(reserva));
         reserva.setPrecioTotal(calcularPrecio(reserva));
+    }
+
+    private void validarFechas(Reserva reserva){
+        LocalDate entrada = reserva.getFechaEntrada();
+        LocalDate salida = reserva.getFechaSalida();
+        if(entrada == null || salida == null){
+            throw new IllegalArgumentException("Las fechas de entrada y salida son obligatorias");
+        }
+        if(!salida.isAfter(entrada)){
+            throw new IllegalArgumentException("La fecha de salida debe ser posterior a la de entrada");
+        }
     }
 
     private Habitacion cargarHabitacion(Reserva reserva){

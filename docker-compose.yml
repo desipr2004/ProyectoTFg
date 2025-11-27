@@ -9,13 +9,13 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/hotelesenanos?allowPublicKeyRetrieval=true&useSSL=false"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/hotel_db?allowPublicKeyRetrieval=true&useSSL=false"
       SPRING_DATASOURCE_USERNAME: desir
       SPRING_DATASOURCE_PASSWORD: 2004
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
   frontend:
     build:
-      # usar toda la carpeta Frontend como contexto para incluir Diseno, TypeScript, images, etc.
+      # usar toda la carpeta Frontend para incluir Diseno, TypeScript, images, etc.
       context: ./Frontend
       # el Dockerfile se mantiene dentro de Diseno
       dockerfile: Diseno/Dockerfile
@@ -25,14 +25,14 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: 2004
-      MYSQL_DATABASE: hotelesenanos
+      MYSQL_DATABASE: hotel_db
       MYSQL_USER: desir
       MYSQL_PASSWORD: 2004
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-      # Ejecutar scripts SQL al inicializar el contenedor (solo la primera vez si el volumen está vacío)
+      # Ejecutar scripts  al inicializar el contenedor (solo la primera vez si el volumen está vacío)
       - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql:ro
 volumes:
   db_data:

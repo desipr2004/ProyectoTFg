@@ -13,7 +13,7 @@ Esta memoria ha sido redactada para servir como documento base de un Trabajo Fin
 - **Tutor/a:** (Nombre completo y departamento de la persona que ha acompañado el TFG).
 - **Grado:** Trabajo Fin de Grado en Ingeniería Informática / Desarrollo de Software.
 - **Fecha de entrega:** 20 de noviembre de 2025.
-- **Palabras clave:** gestión hotelera, reservas online, Spring Boot, MariaDB, frontend responsive, Docker.
+- **Palabras clave:** gestión hotelera, reservas online, Spring Boot, MySQL, frontend responsive, Docker.
 
 En el documento oficial se debe respetar la portada establecida por la universidad. Puedes copiar estos textos y ubicarlos donde corresponda dentro de la plantilla institucional.
 
@@ -35,7 +35,7 @@ En el documento oficial se debe respetar la portada establecida por la universid
    2.7 [Riesgos y mitigaciones](#27-riesgos-y-mitigaciones)
 3. [Tecnologías utilizadas](#3-tecnologías-utilizadas)
    3.1 [Backend – Spring Boot](#31-backend--spring-boot)
-   3.2 [Base de datos – MariaDB/MySQL](#32-base-de-datos--mariadbmysql)
+  3.2 [Base de datos - MySQL (compatible con MariaDB)](#32-base-de-datos--mariadbmysql)
    3.3 [Frontend – HTML/CSS/JS](#33-frontend--htmlcssjs)
    3.4 [Herramientas y utilidades](#34-herramientas-y-utilidades)
    3.5 [Justificación de la pila tecnológica](#35-justificación-de-la-pila-tecnológica)
@@ -78,12 +78,13 @@ En el documento oficial se debe respetar la portada establecida por la universid
    12.1 [Casos de uso detallados](#121-casos-de-uso-detallados)
    12.2 [Buenas prácticas de seguridad](#122-buenas-prácticas-de-seguridad)
    12.3 [Plan de trabajo y cronograma](#123-plan-de-trabajo-y-cronograma)
-   12.4 [Glosario de términos](#124-glosario-de-términos)
-   12.5 [Referencias y bibliografía](#125-referencias-y-bibliografía)
+13. [Referencias bibliográficas y documentales](#13-referencias-bibliográficas-y-documentales)
+14. [Glosario de términos](#14-glosario-de-términos)
+15. [Instalaciones](#15-instalaciones)
 
 ---
 ## 0. Resumen Ejecutivo
-Hoteles Enanos es una solución web completa que digitaliza los procesos esenciales de un hotel independiente o de una pequeña cadena familiar. El proyecto cubre el ciclo completo: un backend en Spring Boot que actúa como API REST, una base de datos MariaDB con datos de ejemplo listos para demostrar el sistema y un frontend en HTML, CSS y JavaScript que funciona en cualquier navegador moderno. El objetivo es que una persona que haya gestionado reservas en hojas de cálculo pueda dar el salto a una plataforma intuitiva sin depender de proveedores costosos.
+Hoteles Enanos es una solución web completa que digitaliza los procesos esenciales de un hotel independiente o de una pequeña cadena familiar. El proyecto cubre el ciclo completo: un backend en Spring Boot que actúa como API REST, una base de datos MySQL con datos de ejemplo listos para demostrar el sistema y un frontend en HTML, CSS y JavaScript que funciona en cualquier navegador moderno. El objetivo es que una persona que haya gestionado reservas en hojas de cálculo pueda dar el salto a una plataforma intuitiva sin depender de proveedores costosos.
 
 En el documento se exponen los motivos que justifican el proyecto, la recogida de requisitos, el diseño de la base de datos, la arquitectura elegida y la implementación de cada componente. También se describe el plan de pruebas, la estrategia de despliegue (local y Docker) y las lecciones aprendidas durante el desarrollo. Cada capítulo incluye ejemplos prácticos, recomendaciones y referencias cruzadas a figuras que, al añadirse en la versión final, refuerzan la comprensión. El tono es deliberadamente claro: se evita la jerga cuando no es estrictamente necesaria y se prioriza la explicación paso a paso para que el documento sirva como guía formativa además de memoria técnica.
 
@@ -104,10 +105,13 @@ El trabajo se centra en dos ideas: ayudar a quienes gestionan los alojamientos y
 6. Documentar cada parte del proyecto para que otra persona pueda desplegarlo sin sustos.
 
 ### 1.3 Alcance real
-El proyecto incluye el backend en Spring Boot, la base de datos en MariaDB/MySQL, el frontend en HTML/CSS/JS y los contenedores Docker para levantar todo con un comando. No se incluye una pasarela de pago real ni integraciones con plataformas como Booking o Expedia. Tampoco se traduce la interfaz a varios idiomas. Esas tareas quedan documentadas como futuras mejoras para no distraer el foco del MVP.
+El proyecto incluye el backend en Spring Boot, la base de datos en MySQL (compatible con MariaDB si se desea cambiar de motor), el frontend en HTML/CSS/JS y los contenedores Docker para levantar todo con un comando. No se incluye una pasarela de pago real ni integraciones con plataformas como Booking o Expedia. Tampoco se traduce la interfaz a varios idiomas. Esas tareas quedan documentadas como futuras mejoras para no distraer el foco del MVP.
 
 ### 1.4 Cómo se trabajó
 La planificación se realizó en iteraciones cortas. Cada dos semanas se cerraba un bloque: primero requisitos y bocetos, luego modelo de datos, API mínima, pantallas, pruebas y despliegue. Todo se versionó con Git y se llevaron registros en GitHub Projects y Notion para no olvidar tareas ni decisiones. Las reuniones con la tutora servían para revisar avances y ajustar prioridades. Gracias a esta dinámica, la memoria fue creciendo a la vez que el software, evitando dejar la documentación para el final.
+
+### 1.5 Antecedentes
+Antes de escribir código se revisaron soluciones comerciales y proyectos open source centrados en hoteles pequeños. La mayoría ofrecían paquetes cerrados, caros o demasiado complejos para negocios familiares que siguen trabajando con hojas de cálculo. También se consultaron experiencias propias en recepciones locales y foros de pequeños hoteleros, donde se repetían las mismas quejas: falta de control sobre los datos, dependencia de terceros y dificultad para desplegar su propia API. Esta investigación confirmó que había espacio para una alternativa ligera, autogestionable y documentada paso a paso.
 
 ---
 ## 2. Análisis y diseño
@@ -142,7 +146,7 @@ Las relaciones son 1:N clásicas (un hotel tiene muchas habitaciones, una habita
 Se optó por una arquitectura en capas simple, fácil de explicar en una defensa:
 1. **Presentación:** son las páginas HTML/CSS/JS servidas por Nginx. Cada botón importante llama a la API con `fetch` y guarda lo mínimo en `localStorage` (por ejemplo la sesión del usuario).
 2. **Negocio:** está en Spring Boot. Los controladores reciben la petición, los servicios aplican las reglas (comprobaciones de fechas, cálculo de precios, etc.) y los repositorios JPA leen o escriben en la base.
-3. **Datos:** MariaDB actúa como almacén estable. Se inicializa con `data.sql` para tener hoteles y reservas de ejemplo listos para las demos.
+3. **Datos:** MySQL actúa como almacén estable. Se inicializa con `data.sql` para tener hoteles y reservas de ejemplo listos para las demos.
 4. **Infraestructura:** Docker Compose levanta todo: backend, base de datos y servidor estático. Con `docker compose up` cualquier miembro del tribunal puede ver la misma versión que tengo en mi portátil.
 
 La comunicación se basa en JSON sobre HTTP, sin trucos raros. Esto permite cambiar el frontend en el futuro (por ejemplo a una app móvil) sin tocar el resto.
@@ -154,7 +158,7 @@ Para apoyar la explicación se incluyeron tres diagramas muy concretos:
 - **Secuencia de reserva:** cuenta paso a paso qué ocurre cuando un usuario pulsa “Confirmar”: validaciones, consulta de habitación, cálculo del precio y respuesta al navegador.
 
 ### 2.5 Infografía tecnológica
-No todo el mundo está acostumbrado a leer nombres de frameworks, así que se preparó una infografía en la que cada pieza tiene color propio: Spring Boot (azul), MariaDB (verde), frontend (naranja) y herramientas (gris). La idea es que el tribunal o un cliente puedan entenderlo de un vistazo sin bucear en el texto.
+No todo el mundo está acostumbrado a leer nombres de frameworks, así que se preparó una infografía en la que cada pieza tiene color propio: Spring Boot (azul), MySQL (verde), frontend (naranja) y herramientas (gris). La idea es que el tribunal o un cliente puedan entenderlo de un vistazo sin bucear en el texto.
 
 ### 2.6 Infografía del proceso
 Esta lámina cuenta la historia completa de una reserva: el cliente busca hotel, filtra fechas, elige habitación y recibe confirmación; mientras, el administrador ve una alerta, revisa los datos y cambia el estado. Visualmente deja claro que la plataforma no es solo una pasarela de pago, sino una herramienta diaria para ambos lados.
@@ -210,15 +214,15 @@ private BigDecimal calcularPrecio(Reserva reserva) {
 }
 ```
 
-### 3.2 Base de datos - MariaDB/MySQL
-El proyecto se apoya en una base relacional porque encaja con la estructura de usuarios, hoteles, habitaciones y reservas. En mi portátil trabajé con MySQL instalado de forma tradicional (para reutilizar herramientas como MySQL Workbench), pero en la entrega final se usa una imagen oficial de MariaDB dentro de Docker. Ambos motores son compatibles con Spring Data JPA y comparten driver (`mysql-connector-j`/`mariadb-java-client`), así que migrar de uno a otro es tan simple como cambiar la URL.
+### 3.2 Base de datos - MySQL (compatible con MariaDB)
+El proyecto se apoya en una base relacional porque encaja con la estructura de usuarios, hoteles, habitaciones y reservas. Tanto en local como en Docker se trabaja con MySQL 8.0, lo que facilita diagnosticar problemas con herramientas conocidas (MySQL Workbench, cliente `mysql`, etc.). MariaDB sigue siendo una alternativa válida porque comparte protocolo y driver, de modo que quien prefiera ese motor solo debe ajustar la URL y las credenciales.
 
-Esta doble configuración está reflejada en los ficheros de propiedades:
+Esta configuración se refleja en los ficheros de propiedades y en el `docker-compose.yml`. El contenedor `db` monta `src/main/resources/data.sql` dentro de `/docker-entrypoint-initdb.d` y lo ejecuta automáticamente la primera vez que crea el volumen `db_data`. Si más adelante se mantiene el volumen y se quieren recargar los datos de ejemplo, basta con lanzar `docker compose exec db sh -c "mysql -udesir -p2004 hotel_db < /docker-entrypoint-initdb.d/data.sql"` para reimportar el script.
 
 - `application.properties` apunta a la instancia local (`jdbc:mysql://localhost:3306/hotelesenanos`) y se usa cuando ejecuto la API con `./mvnw spring-boot:run`.
 - `application-docker.properties` apunta al servicio `db` definido en `docker-compose.yml` (`jdbc:mysql://db:3306/hotelesenanos`) y se activa automáticamente porque el `Dockerfile` exporta `SPRING_PROFILES_ACTIVE=docker`.
 
-De este modo, cualquier persona del tribunal puede lanzar `docker compose up` y tendrá la misma versión de MariaDB, el mismo esquema (`data.sql` se monta como volumen) y las mismas credenciales (`desir/2004`) sin tocar nada más.
+De este modo, cualquier persona del tribunal puede lanzar `docker compose up` y tendrá la misma versión de MySQL, el mismo esquema (`data.sql` se monta como volumen) y las mismas credenciales (`desir/2004`) sin tocar nada más.
 
 Fuente: `src/main/java/com/trabajotfg/spring/hotelesenanos/hoteles_enanos_applications/modelo/Habitacion.java`.
 
@@ -321,7 +325,7 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 ```
 
 ### 3.5 Justificación de la pila tecnológica
-La pila seleccionada equilibra modernidad, comunidad y curva de aprendizaje. Spring Boot es ampliamente aceptado en el ámbito académico y profesional, lo que facilita encontrar documentación. MariaDB y MySQL son bases de datos conocidas por el profesorado y fáciles de defender en memoria. El frontend sin framework reduce dependencias, acelera la carga y simplifica el despliegue en servidores estáticos. Finalmente, Docker Compose permite demostrar el proyecto en cualquier portátil del tribunal con un único comando, eliminando el clásico “en mi máquina funciona”.
+La pila seleccionada equilibra modernidad, comunidad y curva de aprendizaje. Spring Boot es ampliamente aceptado en el ámbito académico y profesional, lo que facilita encontrar documentación. MySQL (y, por compatibilidad, MariaDB) es una base de datos conocida por el profesorado y fácil de defender en memoria. El frontend sin framework reduce dependencias, acelera la carga y simplifica el despliegue en servidores estáticos. Finalmente, Docker Compose permite demostrar el proyecto en cualquier portátil del tribunal con un único comando, eliminando el clásico "en mi máquina funciona".
 
 Fuente: `pom.xml`.
 
@@ -341,11 +345,6 @@ Fuente: `pom.xml`.
 <dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
-    <scope>runtime</scope>
-</dependency>
-<dependency>
-    <groupId>org.mariadb.jdbc</groupId>
-    <artifactId>mariadb-java-client</artifactId>
     <scope>runtime</scope>
 </dependency>
 ```
@@ -387,18 +386,18 @@ Cada carpeta tiene un README breve que explica su contenido cuando es necesario.
 Tras la reorganización del frontend los archivos JavaScript solo viven en `Frontend/TypeScript`. Las vistas de `Diseno/` referencian estos scripts con rutas relativas (`../TypeScript/reserva.js`, `../TypeScript/session.js`, etc.), así se evita tener copias duplicadas y cualquier cambio se refleja al instante tanto en local como dentro del contenedor Nginx.
 
 ### 4.2 Configuración y perfiles
-Spring Boot permite definir perfiles para adaptar la configuración al entorno. Se usan dos principales: `default` para local y `docker` para contenedores. En `application.properties` se especifican las credenciales locales y la ruta del driver MariaDB. En `application-docker.properties` se cambian los datos para apuntar al servicio `db` definido en Docker Compose. El `Dockerfile` exporta la variable `SPRING_PROFILES_ACTIVE=docker`, por lo que no hay que tocar archivos al desplegar. Además, el `docker-compose.yml` define un volumen para `data.sql`, de modo que el script se ejecute automáticamente la primera vez que se arranca la base.
+Spring Boot permite definir perfiles para adaptar la configuración al entorno. Se usan dos principales: `default` para local y `docker` para contenedores. En `application.properties` se especifican las credenciales locales de MySQL (`jdbc:mysql://localhost:3306/hotel_db`, usuario `root`). En `application-docker.properties` se cambian los datos para apuntar al servicio `db` definido en Docker Compose. El `Dockerfile` exporta la variable `SPRING_PROFILES_ACTIVE=docker`, por lo que no hay que tocar archivos al desplegar. El `docker-compose.yml` monta `data.sql` solo la primera vez que se crea el volumen `db_data`; si ya existía y se desean los datos de ejemplo, se documenta ejecutar `docker compose exec db sh -c "mysql -udesir -p2004 hotel_db < /docker-entrypoint-initdb.d/data.sql"`.
 
 ```properties
 # src/main/resources/application-docker.properties
-spring.datasource.url=jdbc:mysql://db:3306/hotelesenanos?allowPublicKeyRetrieval=true&useSSL=false
+spring.datasource.url=jdbc:mysql://db:3306/hotel_db?allowPublicKeyRetrieval=true&useSSL=false
 spring.datasource.username=desir
 spring.datasource.password=2004
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDBDialect
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 spring.jpa.properties.hibernate.format_sql=true
 ```
 
@@ -412,14 +411,15 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: 2004
-      MYSQL_DATABASE: hotelesenanos
+      MYSQL_DATABASE: hotel_db
       MYSQL_USER: desir
       MYSQL_PASSWORD: 2004
     volumes:
+      - db_data:/var/lib/mysql
       - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql:ro
 ```
 
-De esta manera cualquier persona que ejecute `docker compose up` obtiene la misma configuración sin tener que crear usuarios manualmente ni ejecutar scripts adicionales.
+De esta manera cualquier persona que ejecute `docker compose up` obtiene la misma configuración sin tener que crear usuarios manualmente ni preocuparse de las rutas de los datos.
 
 ### 4.3 Entidades y clases principales
 Las entidades JPA reflejan las tablas descritas en el modelo de datos. Cada una incluye anotaciones de validación y métodos de conveniencia. Por ejemplo, `Usuario` tiene un método `activar()` que cambia el estado a true y registra la fecha de modificación; `Habitacion` incluye `estaDisponible()` para comprobar si se puede asignar a una reserva concreta; `Reserva` calcula el número de noches y el precio total para evitar duplicar lógica en el controlador. Esta organización reduce errores y permite reutilizar la lógica en tests o utilidades.
@@ -483,7 +483,7 @@ public BigDecimal precioTotal(){
 
 Así el backend siempre calcula los importes de la misma manera, independientemente de quién consuma la API.
 ### 4.4 Acceso a datos con JPA
-Los repositorios extendidos desde `JpaRepository` aportan métodos CRUD y se complementan con consultas personalizadas. Para detectar solapamientos de reservas se usa una query que cuenta cuántas reservas activas existen en el intervalo solicitado. Si el número supera cero, el servicio lanza una excepción controlada que se transforma en un error legible para el usuario. También se incluyen métodos para filtrar hoteles por nombre, habitaciones por hotel y reservas por correo. Esta capa es testada con perfiles H2 que simulan MariaDB para no depender del contenedor durante las pruebas unitarias.
+Los repositorios extendidos desde `JpaRepository` aportan métodos CRUD y se complementan con consultas personalizadas. Para detectar solapamientos de reservas se usa una query que cuenta cuántas reservas activas existen en el intervalo solicitado. Si el número supera cero, el servicio lanza una excepción controlada que se transforma en un error legible para el usuario. También se incluyen métodos para filtrar hoteles por nombre, habitaciones por hotel y reservas por correo. Esta capa es testada con perfiles H2 que replican el modo MySQL para no depender del contenedor durante las pruebas unitarias.
 
 ```java
 // src/main/java/.../repositorio/RepoReserva.java
@@ -571,6 +571,13 @@ A falta de una capa completa con JWT, el proyecto protege las contraseñas cifr�
 Se añadió un menú de consola para probar la lógica sin necesidad de frontend. Permite registrar usuarios, listar hoteles y simular reservas desde una terminal, lo cual resulta útil durante las primeras iteraciones o para realizar pruebas rápidas. En la carpeta `util` se incluyen clases que agrupan funciones comunes (cifrado, validación de fechas, conversión de DTOs). Estas utilidades se documentan en comentarios breves para que cualquier colaborador sepa cuándo usarlas.
 
 El menú (`usuario/MenuUsuarioConsola.java`) arranca la aplicación Spring, solicita correo y contraseña, y muestra opciones distintas si el usuario es admin o cliente. Los administradores pueden listar todas las reservas, buscar por ID o correo y revisar las suyas propias; los clientes acceden directamente a su historial. Es una herramienta ideal para realizar demos en clase cuando no se dispone del frontend a mano.
+
+
+### 4.9 Proceso de migraci?n
+
+A partir de las entrevistas quedó claro que algunos hoteles siguen gestionando reservas con libretas físicas o plantillas improvisadas. Por ello se definió un protocolo manual pero guiado: primero se recopilan los cuadernos y se vuelcan en una hoja de cálculo estándar (se entrega una plantilla con los campos obligatorios). Después se revisan los datos con un checklist sencillo (coherencia de fechas, correos con formato válido, habitaciones existentes en el hotel) y se corrigen en la propia hoja para evitar arrastrar errores.
+
+Con la plantilla limpia, el personal genera las sentencias `INSERT` necesarias tomando como referencia `src/main/resources/data.sql`. Esas sentencias se ejecutan con MySQL Workbench o con el cliente `mysql` dentro del contenedor para poblar tablas de usuarios, hoteles, habitaciones y reservas. Finalmente se reinicia la aplicación para que Spring cargue los nuevos datos y se validan los registros desde Postman o el menú de consola. Este flujo no requiere scripts adicionales, está al alcance de cualquier recepcionista habituado a Excel y permite migrar el histórico en una tarde sin depender de proveedores externos.
 
 ---
 ## 5. Base de Datos
@@ -724,7 +731,7 @@ Se siguieron pautas básicas de accesibilidad: contraste AA, etiquetas asociadas
 ## 8. Pruebas
 
 ### 8.1 Pruebas unitarias
-Se escribieron pruebas con JUnit 5 y Mockito para cubrir la lógica de los servicios. Por ejemplo, `ReservaServiceTest` verifica que no se permite crear una reserva con fechas invertidas y que se calcula correctamente el precio total. `UsuarioServiceTest` comprueba que no se pueden duplicar correos electrónicos y que las contraseñas se cifran antes de guardarse. Estas pruebas corren en cada ejecución de Maven, lo que ayuda a detectar regresiones.
+Se escribieron pruebas con JUnit 5 aprovechando el contexto de Spring para cubrir la lógica de los servicios. Por ejemplo, `ReservaServiceTest` verifica que no se permite crear una reserva con fechas invertidas y que se calcula correctamente el precio total. `UsuarioServiceTest` comprueba que no se pueden duplicar correos electrónicos y que las contraseñas se cifran antes de guardarse. Estas pruebas corren en cada ejecución de Maven, lo que ayuda a detectar regresiones.
 
 ```java
 // src/test/java/.../servicioTest/UsuarioServiceTest.java
@@ -751,14 +758,19 @@ class UsuarioServiceTest {
 }
 ```
 
-Además de los servicios, existen suites específicas como `HotelControladorTest` (usa MockMvc para simular peticiones HTTP) y `RepoUsuarioTest` (asegura que las consultas personalizadas del repositorio funcionan igual en H2 que en MariaDB). Ejecutar `./mvnw test` antes de cada entrega garantiza que cualquier refactor no rompa estos flujos básicos.
+Además de los servicios, existen suites específicas como `HotelControladorTest` (usa MockMvc para simular peticiones HTTP) y `RepoUsuarioTest` (asegura que las consultas personalizadas del repositorio funcionan igual en H2 que en MySQL). Ejecutar `./mvnw test` antes de cada entrega garantiza que cualquier refactor no rompa estos flujos básicos.
 
 La prueba confirma que el servicio asigna un identificador automático, activa al usuario por defecto y cifra la contraseña antes de guardarla en base de datos.
 
 ### 8.2 Pruebas de integración
 Para asegurar que los componentes cooperan correctamente se utilizaron pruebas de integración con Spring Boot Test y una base H2 configurada en modo MySQL. Se levantó el contexto completo y se lanzaron peticiones MockMvc a los controladores más importantes (autenticación, hoteles y reservas). Esto comprobó que la serialización/deserialización funciona y que las validaciones declaradas en las entidades se aplican al recibir peticiones reales.
 
-`controladorTest/AuthTest.java`, por ejemplo, reproduce todo el flujo de registro + login utilizando la misma colección de datos que el frontend. Para aislar cada caso se reinicia la base en memoria antes de cada método, lo cual ofrece un entorno determinista y parecido al real sin depender de Docker.
+`controladorTest/AuthTest.java`, por ejemplo, reproduce todo el flujo de registro + login utilizando la misma colección de datos que el frontend. Para aislar cada caso se reinicia la base en memoria antes de cada método, lo cual ofrece un entorno determinista y parecido al real sin depender de Docker. Del mismo modo:
+
+- `controladorTest/HotelControladorTest.java` crea hoteles ficticios en la base H2, llama a `GET /api/hotel` y `GET /api/hotel/buscarPorNombre` y comprueba que el JSON devuelto contiene los mismos nombres que se guardaron, confirmando que los filtros funcionan.
+- `repositorioTest/RepoUsuarioTest.java` arranca únicamente la capa de datos y formula preguntas básicas como “¿este correo existe?” o “¿qué usuarios siguen activos?”, para asegurar que las consultas declaradas en los repositorios generan el SQL esperado.
+
+Con estas pruebas se garantiza que tanto los controladores como la capa de persistencia responden igual que en producción sin depender de Docker.
 
 ### 8.3 Cobertura y métricas
 Se empleó JaCoCo para medir la cobertura. Los servicios más críticos superan el 70 % y los controladores principales rondan el 60 %, valores razonables para un TFG, donde la prioridad es garantizar los caminos felices y los errores más habituales. Además de la cobertura se midieron métricas básicas de rendimiento (tiempo medio de respuesta de los endpoints en Docker) y se documentaron en el anexo.
@@ -772,19 +784,32 @@ El equipo elaboró un checklist con las pruebas manuales que se ejecutan antes d
 ## 9. Instalación y despliegue
 
 ### 9.1 Requisitos
-- **Ejecución local:** Java 17, Maven Wrapper, MySQL/MariaDB 8+, Node.js (solo si se quiere servir el frontend con un servidor local) y Postman opcional.
-- **Ejecución con Docker:** Docker Desktop 4.x o posterior, 4 GB de RAM libre y acceso a terminal.
-- **Herramientas de apoyo:** editor de código, cliente Git y navegador moderno.
+- **Ejecución local:** Java 17 (JDK completo), Maven Wrapper (`./mvnw` funciona en Windows/Linux/macOS), MySQL 8+ con un puerto disponible (3306 por defecto; si alguien prefiere MariaDB también es compatible), Node.js únicamente si se desea levantar el frontend con un servidor local tipo `npx http-server` y Postman opcional para probar la API. Se recomienda tener al menos 8 GB de RAM para abrir IDE + base de datos sin ralentizaciones.
+- **Ejecución con Docker:** Docker Desktop 4.x o posterior con soporte para contenedores de Linux, 4 GB de RAM libres para asignar a Docker, conexión a internet para descargar las imágenes la primera vez y acceso a una terminal desde la que ejecutar `docker compose up`.
+- **Herramientas de apoyo:** editor de código (VS Code, IntelliJ, etc.), cliente Git para clonar el repositorio, navegador moderno (Chrome/Edge/Firefox) y utilidades como Git Bash o PowerShell para ejecutar los comandos indicados.
 
 ### 9.2 Configuración del entorno
-En modo local, basta con crear una base de datos llamada `hotelesenanos`, actualizar las credenciales en `application.properties` si fuera necesario y ejecutar `./mvnw spring-boot:run`. Para el frontend se puede usar `npx http-server` o cualquier servidor estático. En Docker, la configuración ya está embebida: el `docker-compose.yml` crea los contenedores `api`, `db` y `frontend`, publica los puertos 8080 (API) y 4173 (frontend) y monta el script de datos.
+- **Local:** crea una base llamada `hotel_db` en tu MySQL 8 (o MariaDB, si lo prefieres), abre `src/main/resources/application.properties` y revisa si te sirven las credenciales por defecto (`root/root`). Si usas otras, cambia ahí la URL o define variables como `SPRING_DATASOURCE_USERNAME`. Después ejecuta `./mvnw spring-boot:run` y la API quedará disponible en `http://localhost:8080`. El frontend puedes abrirlo con `npx http-server Frontend/Diseno` o con cualquier servidor estático (el "Live Server" de VS Code va perfecto).
+- **Docker:** todo viene preparado. El `docker-compose.yml` construye la imagen del backend, levanta la base (MySQL 8) con el mismo nombre `hotel_db`, copia `data.sql` para cargar hoteles/habitaciones de ejemplo y arranca un Nginx con las páginas. El script se ejecuta automáticamente solo si el volumen `db_data` está vacío; si ya existía y quieres recargar los datos de ejemplo, ejecuta `docker compose exec db sh -c "mysql -udesir -p2004 hotel_db < /docker-entrypoint-initdb.d/data.sql"`. Después de eso, visita `http://localhost:4173` para la web o `http://localhost:8080/api/hotel` si quieres ver la API en acción.
+- **Variables opcionales:** ¿Quieres otras contraseñas o puerto? Cambia las variables del bloque `environment` en el compose (`MYSQL_PASSWORD`, `SPRING_DATASOURCE_URL`, etc.) y reinicia los contenedores. Spring Boot leerá esos valores en el arranque, así que no hace falta recompilar nada.
 
-### 9.3 Instalación paso a paso
-1. Clonar el repositorio: `git clone https://github.com/usuario/ProyectoTFg-main.git`.
-2. Entrar en la carpeta y ejecutar las pruebas: `./mvnw clean test`.
-3. Levantar la base local (si se usa MySQL fuera de Docker) o ejecutar `docker compose up -d` para lanzar todos los servicios.
-4. Abrir el navegador en `http://localhost:4173` para el frontend (Nginx) y en `http://localhost:8080/api/hotel` para verificar la API.
-5. Importar la colecci?n Postman adjunta al entregable (o exportarla de nuevo desde Postman si se trabaja en otro equipo) y probar los endpoints principales.
+### 9.3 Instalaci?n paso a paso
+Como el proyecto se entrega comprimido (sin clonar el repositorio), estos pasos parten de que se descomprime el ZIP en una carpeta local y se sigue una de las dos rutas siguientes:
+
+**Modo local (ZIP)**
+1. Descomprime el archivo en la carpeta que prefieras.
+2. Crea un esquema `hotel_db` en tu MySQL (o MariaDB) y ajusta `src/main/resources/application.properties` si usas otras credenciales.
+3. Ejecuta `./mvnw clean test` para confirmar que todo compila y las pruebas pasan.
+4. Arranca el backend con `./mvnw spring-boot:run` (quedar? en `http://localhost:8080`).
+5. Sirve el frontend con `npx http-server Frontend/Diseno -p 4173` o Live Server y abre la URL indicada.
+6. Importa la colecci?n Postman incluida y prueba endpoints como `/api/auth/login`, `/api/hotel` y `/api/reservas`.
+
+**Modo Docker**
+1. Desde la carpeta descomprimida ejecuta `docker compose build` y despu?s `docker compose up -d`.
+2. Comprueba con `docker compose logs db` que la base `hotel_db` se inicializ? con `data.sql`. Si el volumen `db_data` ya exist?a y no se ve ese log, reimporta los datos con `docker compose exec db sh -c "mysql -udesir -p2004 hotel_db < /docker-entrypoint-initdb.d/data.sql"`.
+3. Abre `http://localhost:4173` para navegar por el frontend y `http://localhost:8080/api/hotel` para verificar la API.
+4. Importa la colecci?n Postman con base `http://localhost:8080/api` y valida registro, login y reservas.
+5. Det?n los contenedores con `docker compose down`; a?ade `-v` si quieres arrancar con la base limpia.
 
 ```yaml
 # docker-compose.yml
@@ -799,9 +824,10 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/hotelesenanos?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/hotel_db?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: desir
       SPRING_DATASOURCE_PASSWORD: 2004
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
   frontend:
     build:
       context: ./Frontend
@@ -812,7 +838,7 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: 2004
-      MYSQL_DATABASE: hotelesenanos
+      MYSQL_DATABASE: hotel_db
       MYSQL_USER: desir
       MYSQL_PASSWORD: 2004
     volumes:
@@ -822,10 +848,17 @@ volumes:
   db_data:
 ```
 
-El archivo orquesta los tres contenedores (API, frontend y base) y monta automáticamente el script `data.sql` en el arranque inicial para que no tengas que poblar la base manualmente.
+El archivo orquesta los tres contenedores (API, frontend y base), monta automáticamente el script `data.sql` en el arranque inicial y mantiene el volumen `db_data` para conservar la información entre reinicios.
 
 ### 9.4 Despliegue en producción
-Para un despliegue en un servidor remoto se recomienda compilar el proyecto con `./mvnw clean package`, copiar el JAR generado y configurar variables de entorno con las credenciales de la base. El frontend puede alojarse en un bucket estático (S3, Azure Storage) o en un Nginx ligero. El `docker-compose.yml` también sirve como punto de partida para un VPS: basta con adaptar los dominios y habilitar HTTPS mediante Let’s Encrypt. En el anexo se incluyen scripts para renovar certificados y realizar copias de seguridad automáticas de la base.
+Para mostrar la aplicación fuera del portátil se puede seguir un plan sencillo:
+- **Preparar el backend:** ejecuta `./mvnw clean package -DskipTests`. El proceso genera un archivo en `target/hoteles-enanos-applications-0.0.1-SNAPSHOT.jar`. Copia ese archivo al servidor (VPS, máquina on-premise, etc.) y arráncalo con `java -jar hoteles-enanos-applications-0.0.1-SNAPSHOT.jar`. Antes de ponerlo en marcha define las variables de entorno con la URL y las credenciales de la base (por ejemplo, `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD`) para no dejar contraseñas en los ficheros.
+- **Publicar el frontend:** como son archivos HTML/CSS/JS, basta con copiarlos a un servidor web ligero (Nginx, Apache) o a un servicio estático tipo Amazon S3. En un VPS típico se pueden colocar en `/var/www/hoteles-enanos` y apuntar Nginx a esa carpeta para que la web quede disponible en el dominio deseado.
+- **Base de datos y copias:** lo ideal es usar una base gestionada (RDS, Azure) o, al menos, un contenedor MySQL separado del backend. El `docker-compose.yml` sirve como plantilla: solo hay que ajustar nombres y contraseñas reales. Conviene programar un backup diario (por ejemplo, un `mysqldump` que se guarda en el cloud o en un disco externo) para no perder los registros.
+- **HTTPS y dominio:** si el VPS expone la aplicación a internet, instala Let’s Encrypt (Certbot) y configura un certificado para tu dominio (`api.loshoteles.com`). Así los datos se envían cifrados y el navegador no muestra avisos de inseguridad.
+- **Supervisión básica:** se recomienda crear un servicio de sistema (por ejemplo, `systemd`) que ejecute `java -jar ...` al arrancar el servidor y reinicie el proceso si falla. También es útil habilitar un monitor sencillo (Pingdom, UptimeRobot) que avise si la API deja de responder.
+
+Este enfoque, aunque simplificado, deja la aplicación lista para producción sin necesidad de herramientas complejas. El compose incluido en el proyecto sigue siendo útil para montar un entorno de pruebas o para levantar los tres servicios en un VPS cuando se necesite una demo rápida, pero el despliegue final puede gestionarse con los pasos anteriores.
 
 ### 9.5 Plan de mantenimiento
 El plan contempla tareas periódicas: respaldo semanal de la base, actualización trimestral de dependencias, revisión semestral de credenciales y verificación anual del rendimiento (limpieza de logs, revisión de índices). También se propone documentar cada incidencia importante en un registro compartido para anticipar patrones (por ejemplo, si cada verano se saturan las reservas, se puede planificar capacidad adicional).
@@ -867,23 +900,6 @@ El plan se dividió en seis sprints de dos semanas. A modo de resumen:
 | 4 | Frontend e integración | Pantallas principales y conexión con la API. |
 | 5 | Docker y documentación | Contenedores, scripts y capítulos 8-11 de la memoria. |
 | 6 | Revisión final | Pruebas completas, anexos, preparación de la defensa. |
-
-### 12.4 Glosario de términos
-- **API REST:** interfaz que permite a diferentes aplicaciones comunicarse mediante HTTP y JSON.
-- **CRUD:** operaciones básicas de un sistema (crear, leer, actualizar, eliminar).
-- **Docker Compose:** herramienta para definir y ejecutar múltiples contenedores de Docker.
-- **JPA:** especificación de Java para mapear objetos a tablas de bases de datos relacionales.
-- **LocalStorage:** almacenamiento local del navegador que persiste datos aunque se cierre la pestaña.
-- **PMS:** Property Management System; software de gestión hotelera usado por profesionales.
-- **Responsive:** capacidad de una web de adaptarse a distintos tamaños de pantalla sin perder usabilidad.
-
-### 12.5 Referencias y bibliografía
-1. Spring Boot Reference Documentation. Spring.io, 2025.
-2. MariaDB Knowledge Base. MariaDB Foundation, 2025.
-3. Mozilla Developer Network (MDN). Guías de HTML, CSS y JavaScript.
-4. Docker Documentation. Docker Inc., 2025.
-5. International Hospitality Technology Guidelines, edición 2024.
-6. Guías docentes del TFG en Ingeniería Informática, Universidad de referencia.
 
 ---
 
@@ -1007,5 +1023,26 @@ Para que la plataforma evolucione con las necesidades reales del hotel se propon
 ---
 ### 12.31 Lista ampliada de abreviaturas
 Para facilitar la lectura se incluye una lista extendida de siglas y acrónimos usados a lo largo del documento: API (Application Programming Interface), DTO (Data Transfer Object), ER (Entidad-Relación), KPI (Indicador Clave de Desempeño), PMS (Property Management System), SLA (Acuerdo de Nivel de Servicio), UI (Interfaz de Usuario), UX (Experiencia de Usuario), VPS (Servidor Privado Virtual) y muchas más. Cada entrada describe en un par de frases el significado práctico dentro del proyecto. Por ejemplo, se aclara que `DTO` se usa para enviar datos entre backend y frontend sin exponer entidades completas, o que un `SLA` establece el tiempo máximo aceptable para resolver incidencias. Contar con esta lista evita confusiones y hace que el texto siga siendo accesible para lectores de distintas disciplinas.
+
+---
+## 13. Referencias bibliográficas y documentales
+- Documentación oficial de [Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/).
+- Manuales de [MySQL/MariaDB](https://dev.mysql.com/doc/) para la definición de esquemas y optimización de consultas.
+- Guías de [Docker y Docker Compose](https://docs.docker.com/compose/) para la construcción y orquestación de contenedores.
+- Referencias de [Postman](https://learning.postman.com/) relativas a la creación de colecciones y pruebas automatizadas.
+- [Nginx Admin Guide](https://nginx.org/en/docs/) para la configuración de servidores estáticos y reverse proxy.
+- Apuntes propios del grado (Bases de Datos, Servicios Web y Desarrollo Frontend) revisados durante el proyecto.
+
+## 14. Glosario de términos
+- **API REST:** interfaz que permite a diferentes aplicaciones comunicarse mediante HTTP y JSON.
+- **CRUD:** operaciones básicas de un sistema (crear, leer, actualizar, eliminar).
+- **Docker Compose:** herramienta para definir y ejecutar múltiples contenedores de Docker.
+- **JPA:** especificación de Java para mapear objetos a tablas de bases de datos relacionales.
+- **LocalStorage:** almacenamiento local del navegador que persiste datos aunque se cierre la pestaña.
+- **PMS:** Property Management System; software de gestión hotelera usado por profesionales.
+- **Responsive:** capacidad de una web de adaptarse a distintos tamaños de pantalla sin perder usabilidad.
+
+## 15. Instalaciones
+El desarrollo y las pruebas se realizaron en un portátil con Windows 11, 16 GB de RAM y procesador Intel i7, utilizando Visual Studio Code como IDE principal. Se instalaron Java 17, Maven Wrapper, Node.js 20 y Docker Desktop para replicar el entorno final. Además, se contó con acceso a un VPS (2 vCPU, 4 GB RAM) para ensayar despliegues remotos y verificar el proceso descrito en la sección 9.4. Estas instalaciones son las que se recomiendan al profesorado para revisar el proyecto de forma idéntica a como se desarrolló.
 
 ---

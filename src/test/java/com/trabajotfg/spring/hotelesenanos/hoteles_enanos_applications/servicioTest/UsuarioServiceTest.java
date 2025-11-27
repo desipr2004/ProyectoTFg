@@ -1,6 +1,7 @@
 package com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.servicioTest;
 
 import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -35,5 +36,16 @@ public class UsuarioServiceTest {
 
         assertThat(usuarioCreado.getContrasenna()).isNotEqualTo("1234");
 
+    }
+
+    @Test
+    void registrarUsuario_LanzaExcepcionSiEmailExiste() throws Exception{
+        String emailDuplicado = "duplicado@test.com";
+        usuarioService.registrarUsuario("Prueba", "Su", emailDuplicado, "bbb", "611024000");
+
+        assertThatThrownBy(() ->
+                usuarioService.registrarUsuario("Prueba2", "No", emailDuplicado, "aaaa", "622023740")
+        ).isInstanceOf(Exception.class)
+         .hasMessageContaining("email");
     }
 }
