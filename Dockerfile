@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile para el backend (Spring Boot)
+# Dockerfile para construir y ejecutar la aplicación Spring Boot
 # paso 1: compilar la aplicación con Maven
 FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app

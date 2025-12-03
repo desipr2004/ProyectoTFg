@@ -5,6 +5,6 @@ FROM nginx:alpine
 COPY Diseno/ /usr/share/nginx/html/
 # Copiar los scripts (fuente única) que viven en `TypeScript/`
 COPY TypeScript/ /usr/share/nginx/html/TypeScript/
-# Copiar configuración personalizada de nginx para servir portada.html por defecto
+# Copiar configuración personalizada de nginx para servir index.html (portada) por defecto
 COPY Diseno/default.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80

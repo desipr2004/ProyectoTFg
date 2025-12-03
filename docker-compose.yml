@@ -1,24 +1,32 @@
-version: '3.8'
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile
+    image: desiipr04/hoteles-enanos-app:latest
     ports:
       - "8080:8080"
     depends_on:
       - db
+      - mailhog
     environment:
       SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/hotel_db?allowPublicKeyRetrieval=true&useSSL=false"
       SPRING_DATASOURCE_USERNAME: desir
       SPRING_DATASOURCE_PASSWORD: 2004
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      APP_MAIL_ENABLED: "true"
+      APP_MAIL_FROM: "hotelesenanos@gmail.com"
+      SPRING_MAIL_HOST: mailhog
+      SPRING_MAIL_PORT: 1025
+      SPRING_MAIL_USERNAME: hotelesenanos@gmail.com
+      SPRING_MAIL_PASSWORD: "jcbe gfyy wzuq qlcc"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
   frontend:
     build:
-      # usar toda la carpeta Frontend para incluir Diseno, TypeScript, images, etc.
       context: ./Frontend
-      # el Dockerfile se mantiene dentro de Diseno
       dockerfile: Diseno/Dockerfile
+    image: desiipr04/hoteles-enanos-frontend:latest
     ports:
       - "4173:80"
   db:
@@ -32,7 +40,11 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-      # Ejecutar scripts  al inicializar el contenedor (solo la primera vez si el volumen está vacío)
       - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql:ro
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 volumes:
   db_data:

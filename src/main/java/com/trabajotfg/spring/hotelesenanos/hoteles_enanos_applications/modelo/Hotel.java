@@ -1,6 +1,5 @@
 package com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -49,7 +48,6 @@ public class Hotel {
     private Boolean activo = true;
 
     //Relacion con habitaciones, un htel tiene muchas habitaciones
-    @JsonManagedReference("hotel-habitaciones")
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Habitacion> habitaciones ;
 

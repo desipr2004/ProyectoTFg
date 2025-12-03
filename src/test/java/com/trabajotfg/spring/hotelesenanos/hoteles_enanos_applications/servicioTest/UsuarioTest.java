@@ -41,7 +41,7 @@ public class UsuarioTest {
         usuarioTst.setNombre("Lara");
         usuarioTst.setApellido("Morandini");
         usuarioTst.setEmail("larita@gmail.com");
-        // Guardamos la contraseña cifrada tal y como lo hace el servicio
+        // Guardamos la contraseña cifrada tal cual lo hace el servicio
         usuarioTst.setContrasenna(Cifrado.cifrarPassword("larita123"));
         usuarioTst.setActivo(true);
         usuarioTst.setTipoUsuario(Usuario.UsuarioTipo.CLIENT);

@@ -2,6 +2,7 @@ package com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -9,6 +10,10 @@ import jakarta.validation.constraints.*;
 @Entity
 @Table(name = "reservas")
 public class Reserva {
+
+    private static final BigDecimal RECARGO_POR_PERSONA = new BigDecimal("60.00");
+    private static final BigDecimal SUPLEMENTO_POR_DIA = new BigDecimal("10.00");
+    private static final BigDecimal COSTE_TODO_INCLUIDO = new BigDecimal("10.00");
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +53,9 @@ public class Reserva {
     @ManyToOne
     @JoinColumn(name ="usuario_id")
     private Usuario usuario;
+
+    @Column(name = "email_usuario")
+    private String emailUsuario;
 
     @ManyToOne
     @JoinColumn(name="habitacion_id")
@@ -162,6 +170,14 @@ public class Reserva {
         this.habitacion = habitacion;
     }
 
+    public String getEmailUsuarioLibre(){
+        return emailUsuario;
+    }
+
+    public void setEmailUsuarioLibre(String email){
+        this.emailUsuario = email;
+    }
+
     //Propiedad calculada para exponer el nombre completo del usuario en JSON sin crear columnas extras.
     @Transient
     public String getNombreCompletoUsuario(){
@@ -178,10 +194,10 @@ public class Reserva {
     //Otro dato de solo lectura para que el front pueda mostrar el correo cuando haga falta.
     @Transient
     public String getEmailUsuario(){
-        if(usuario == null){
-            return null;
+        if(usuario != null && usuario.getEmail() != null){
+            return usuario.getEmail();
         }
-        return usuario.getEmail();
+        return emailUsuario;
     }
 
     @Override
@@ -222,22 +238,22 @@ public class Reserva {
     }
 
     public BigDecimal precioTotal(){
-        if(habitacion == null){
-            return BigDecimal.ZERO;
-        }
-
-        int noches = Math.max(calculoNoches(), 1); //Se guarda en noches el resultado del metodo
+        int noches = Math.max(calculoNoches(), 1);
         int personas = Math.max(numPersonas, 1);
-        BigDecimal precioPorNoche = habitacion.getPrecioPorNoche(); //Se guarda el precio de la habitacion por noche 
-        BigDecimal precioHabitacion = precioPorNoche
-                .multiply(BigDecimal.valueOf(noches))
-                .multiply(BigDecimal.valueOf(personas));//se multiplica por noches y numero de personas
 
-        //si hay todo incluido, se aumenta un 20%
-        if(todoIncluido){
-            precioHabitacion = precioHabitacion.multiply(BigDecimal.valueOf(1.2));
+        BigDecimal precioPorNoche = BigDecimal.ZERO;
+        if (habitacion != null && habitacion.getPrecioPorNoche() != null) {
+            precioPorNoche = habitacion.getPrecioPorNoche();
         }
-        return precioHabitacion;
+
+        BigDecimal total = precioPorNoche.multiply(BigDecimal.valueOf(noches));
+        total = total.add(RECARGO_POR_PERSONA.multiply(BigDecimal.valueOf(personas)));
+        total = total.add(SUPLEMENTO_POR_DIA.multiply(BigDecimal.valueOf(noches)));
+
+        if(Boolean.TRUE.equals(todoIncluido)){
+            total = total.add(COSTE_TODO_INCLUIDO);
+        }
+        return total.setScale(2, RoundingMode.HALF_UP);
     }
 
     //comprobar que hay una habitacion asignada el numero de huespedes no exceda la capacidad

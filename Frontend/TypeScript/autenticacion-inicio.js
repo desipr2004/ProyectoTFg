@@ -1,11 +1,12 @@
 (function(){
-    var URL_API = (window.location.protocol === "file:" ||
-        ["localhost", "127.0.0.1", "0.0.0.0"].indexOf(window.location.hostname) !== -1)
-        ? "http://localhost:8080/api"
-        : window.location.origin + "/api";
+    // Script reutilizado en la landing para abrir modales de login/registro y hablar con la API
+    var resolvedProtocol = window.location.protocol === "https:" ? "https:" : "http:";
+    var resolvedHost = window.location.hostname && window.location.hostname !== "" ? window.location.hostname : "localhost";
+    var URL_API = resolvedProtocol + "//" + resolvedHost + ":8080/api";
 
     var SesionApp = window.SesionApp || {};
 
+    // Ejecuta la callback cuando el DOM está listo (soporta carga temprana)
     function alCargar(callback){
         if(document.readyState === "loading"){
             document.addEventListener("DOMContentLoaded", callback);
@@ -14,7 +15,7 @@
         }
     }
 
-    // Dibuja el mensaje informativo debajo de los formularios del modal
+    // Muestra mensajes contextualizados bajo los formularios
     function mostrarAviso(elemento, mensaje, tipo){
         if(!elemento){
             return;
@@ -26,6 +27,7 @@
         }
     }
 
+    // Helpers para mostrar u ocultar modales reutilizando clases CSS
     function mostrarModal(modal){
         if(modal){
             modal.classList.add("open");
@@ -89,7 +91,7 @@
                 }
             });
         }
-
+//Envio de datos del formulario de inicio de sesion y registro
         if(formularioInicio){
             formularioInicio.addEventListener("submit", async function(event){
                 event.preventDefault();
@@ -115,7 +117,7 @@
                         }
                         ocultarModal(modalInicio);
                         setTimeout(function(){
-                            window.location.href = "index.html#hotelsList";
+                            window.location.href = "inicio.html#hotelsList";
                         }, 600);
                     }else{
                         mostrarAviso(mensajeInicio, resultadoApi.error || "No se pudo iniciar sesión", "error");
@@ -125,7 +127,7 @@
                 }
             });
         }
-
+//Envio de datos del formulario de registro
         if(formularioRegistro){
             formularioRegistro.addEventListener("submit", async function(event){
                 event.preventDefault();
@@ -145,7 +147,7 @@
                 }
 
                 try{
-                    var respuestaApi = await fetch(URL_API + "/auth/registro-rapido", {
+                    var respuestaApi = await fetch(URL_API + "/auth/registro", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(datosEnvio)
@@ -159,7 +161,7 @@
                         }
                         ocultarModal(modalRegistro);
                         setTimeout(function(){
-                            window.location.href = "index.html#hotelsList";
+                            window.location.href = "inicio.html#hotelsList";
                         }, 600);
                     }else{
                         mostrarAviso(mensajeRegistro, resultadoApi.error || "No se pudo registrar el usuario", "error");

@@ -1,553 +1,180 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoteles Enanos - Reserva tu estancia</title>
+    <title>Hoteles Enanos - Bienvenida</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Aboreto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="logo.svg">
 </head>
-<body>
-    <header class="glass header">
-        <div class="logo" style="display:flex; flex-direction:column; align-items:center; gap:2px; background:none; box-shadow:none; padding:0;">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-                <polygon points="20,6 6,18 8,18 8,34 32,34 32,18 34,18" fill="#FFF"></polygon>
-                <rect x="14" y="24" width="6" height="10" fill="#E8E8E8"></rect>
-                <rect x="20" y="24" width="6" height="6" fill="#E8E8E8"></rect>
-            </svg>
-            <span style="font-family:'Aboreto',serif; color:#FFF; font-size:12px; line-height:22px; font-weight:bold; letter-spacing:2px;">Hoteles Enanos</span>
-        </div>
-        <nav>
-            <ul class="nav-list">
-                <li><a href="index.html" class="nav-link">Inicio</a></li>
-                <li><a href="habitaciones.html" class="nav-link">Hoteles</a></li>
-                <li><a href="reserva.html" class="nav-link">Reservas</a></li>
-                <li><a href="usuario.html" class="nav-link">Usuarios</a></li>
-            </ul>
-        </nav>
-        <div style="display: flex; gap: 16px; align-items: center;">
-            <button type="button" class="btn-primary" id="headerLoginBtn">Iniciar sesión</button>
-            <button type="button" class="btn-primary" id="headerRegisterBtn">Registrarse</button>
-            <button type="button" class="btn-secondary" id="headerLogoutBtn">Cerrar sesión</button>
-        </div>
-    </header>
-    <main>
-        <section class="hero glass">
-            <h1 class="title-abro">Encuentra tu hotel ideal</h1>
-            <p class="subtitle-urbanist">Haz tu reserva para una mejor experiencia.</p>
-            <form class="search-form glass" id="hotelSearchForm" novalidate>
-                <input type="text" placeholder="Destino o nombre del hotel" class="input-search" id="searchTerm">
-                <input type="date" class="input-date" id="checkInDate">
-                <input type="date" class="input-date" id="checkOutDate">
-                <button type="submit" class="btn-primary">Buscar</button>
+<body class="landing-body">
+    <main class="landing-page glass">
+        <header class="landing-header">
+            <div class="landing-brand">
+                <div class="landing-logo" aria-hidden="true">
+                    <svg width="54" height="54" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="20,6 6,18 8,18 8,34 32,34 32,18 34,18" fill="#FFFFFF"></polygon>
+                        <rect x="17" y="24" width="6" height="10" rx="2" fill="#C4C4C4"></rect>
+                    </svg>
+                </div>
+                <h1 class="landing-title">HOTELES<br>ENANOS</h1>
+            </div>
+        </header>
+
+        <section class="landing-toggle" aria-label="Modo de acceso">
+            <button id="landingLoginBtn" class="btn-primary landing-btn active" type="button">Iniciar sesi&oacute;n</button>
+            <button id="landingRegisterBtn" class="btn-primary landing-btn secondary" type="button">Registrarse</button>
+        </section>
+        <!-- Preguntas de login y registro -->
+        <section class="landing-form-card" aria-live="polite">
+            <form id="landingLoginForm" class="landing-form" autocomplete="off">
+                <label class="landing-label" for="landingLoginEmail">Correo electr&oacute;nico</label>
+                <input class="landing-input" type="email" id="landingLoginEmail" name="loginEmail" autocomplete="off" inputmode="email" autocorrect="off" autocapitalize="none" spellcheck="false" data-form-type="other" data-lpignore="true" required placeholder="tu@email.com">
+
+                <label class="landing-label" for="landingLoginPassword">Contrase&ntilde;a</label>
+                <input class="landing-input" type="password" id="landingLoginPassword" name="loginPassword" autocomplete="current-password" required placeholder="********">
+
+                <button class="btn-primary landing-submit" type="submit">Entrar</button>
+                <p class="landing-feedback" id="landingLoginFeedback"></p>
+            </form>
+
+            <form id="landingRegisterForm" class="landing-form" style="display:none;" autocomplete="off">
+                <label class="landing-label" for="landingRegisterNombre">Nombre</label>
+                <input class="landing-input" type="text" id="landingRegisterNombre" placeholder="Nombre">
+
+                <label class="landing-label" for="landingRegisterApellido">Apellido</label>
+                <input class="landing-input" type="text" id="landingRegisterApellido" placeholder="Apellido">
+
+                <label class="landing-label" for="landingRegisterEmail">Correo electr&oacute;nico</label>
+                <input class="landing-input" type="email" id="landingRegisterEmail" name="registerEmail" autocomplete="off" inputmode="email" autocorrect="off" autocapitalize="none" spellcheck="false" data-form-type="other" data-lpignore="true" required placeholder="tu@email.com">
+
+                <label class="landing-label" for="landingRegisterTelefono">Tel&eacute;fono</label>
+                <input class="landing-input" type="tel" id="landingRegisterTelefono" placeholder="+34 600 000 000">
+
+                <label class="landing-label" for="landingRegisterPassword">Contrase&ntilde;a</label>
+                <input class="landing-input" type="password" id="landingRegisterPassword" name="registerPassword" autocomplete="new-password" required placeholder="********">
+
+                <button class="btn-primary landing-submit" type="submit">Crear cuenta</button>
+                <p class="landing-feedback" id="landingRegisterFeedback"></p>
             </form>
         </section>
-        <section class="hotels-list" id="hotelsList"></section>
     </main>
 
-    <div class="modal-overlay" id="homeLoginModal">
-        <div class="modal-card glass">
-            <button type="button" class="modal-close" data-close-login>&times;</button>
-            <h2 class="section-title">Iniciar sesión</h2>
-            <form id="homeLoginForm" class="user-form">
-                <label for="homeLoginEmail">Correo</label>
-                <input type="email" id="homeLoginEmail" required placeholder="usuario@correo.com">
 
-                <label for="homeLoginPassword">Contraseña</label>
-                <input type="password" id="homeLoginPassword" required placeholder="Introduce tu contraseña">
-
-                <button type="submit" class="btn-primary">Entrar</button>
-                <p class="form-feedback" id="homeLoginFeedback"></p>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="homeRegisterModal">
-        <div class="modal-card glass">
-            <button type="button" class="modal-close" data-close-register>&times;</button>
-            <h2 class="section-title">Regístrate</h2>
-            <form id="homeRegisterForm" class="user-form">
-                <label for="homeRegisterNombre">Nombre</label>
-                <input type="text" id="homeRegisterNombre" placeholder="Nombre">
-
-                <label for="homeRegisterApellido">Apellido</label>
-                <input type="text" id="homeRegisterApellido" placeholder="Apellido">
-
-                <label for="homeRegisterEmail">Correo</label>
-                <input type="email" id="homeRegisterEmail" required placeholder="usuario@correo.com">
-
-                <label for="homeRegisterTelefono">Teléfono</label>
-                <input type="tel" id="homeRegisterTelefono" placeholder="Número de contacto">
-
-                <label for="homeRegisterPassword">Contraseña</label>
-                <input type="password" id="homeRegisterPassword" required placeholder="Crea una contraseña segura">
-
-                <button type="submit" class="btn-primary">Registrarme</button>
-                <p class="form-feedback" id="homeRegisterFeedback"></p>
-            </form>
-        </div>
-    </div>
-
-    <footer class="glass footer">
-        <p class="footer-text">&copy; 2025 Hoteles Enanos. Todos los derechos reservados.</p>
-    </footer>
     <script src="../TypeScript/session.js"></script>
-    <script src="../TypeScript/home-auth.js"></script>
     <script>
-        (function () {
-            const hotelsList = document.getElementById('hotelsList');
-            const searchForm = document.getElementById('hotelSearchForm');
-            const searchTermInput = document.getElementById('searchTerm');
-            const checkInInput = document.getElementById('checkInDate');
-            const checkOutInput = document.getElementById('checkOutDate');
-            const hotelsState = {
-                all: []
-            };
+        // Parte de la página de bienvenida, login y registro
+        (function(){
+            const resolvedProtocol = window.location.protocol === "https:" ? "https:" : "http:";
+            const resolvedHost = window.location.hostname && window.location.hostname !== ""
+                ? window.location.hostname
+                : (window.location.host ? window.location.host.split(":")[0] : "localhost");
+            const URL_API = resolvedProtocol + "//" + resolvedHost + ":8080/api";
 
-            if (!hotelsList) {
-                return;
+            const SesionApp = window.SesionApp || {};
+
+            function setMode(mode){
+                const loginForm = document.getElementById("landingLoginForm");
+                const registerForm = document.getElementById("landingRegisterForm");
+                const loginBtn = document.getElementById("landingLoginBtn");
+                const registerBtn = document.getElementById("landingRegisterBtn");
+                // Muestra el formulario correspondiente y resalta el botón activo
+                if(loginForm){ loginForm.style.display = mode === "login" ? "block" : "none"; }
+                if(registerForm){ registerForm.style.display = mode === "register" ? "block" : "none"; }
+                if(loginBtn){ loginBtn.classList.toggle("active", mode === "login"); }
+                if(registerBtn){ registerBtn.classList.toggle("active", mode === "register"); }
             }
 
-            const currentHost = window.location.hostname;
-            const isLocalEnv = window.location.protocol === 'file:' ||
-                ['localhost', '127.0.0.1', '0.0.0.0'].includes(currentHost);
-
-            const API_URL = isLocalEnv
-                ? 'http://localhost:8080/api/hotel'
-                : `${window.location.origin}/api/hotel`;
-
-            const escapeHTML = (value) => {
-                if (value === null || value === undefined) {
-                    return '';
-                }
-
-                return value.toString()
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#39;');
-            };
-
-            const formatPhone = (phone) => {
-                if (!phone) {
-                    return 'No informado';
-                }
-
-                const sanitized = phone.toString().replace(/\s+/g, '');
-                return `<a href="tel:${sanitized}" style="color:#1d2572; text-decoration:none;">${escapeHTML(phone)}</a>`;
-            };
-
-            const formatEmail = (email) => {
-                if (!email) {
-                    return 'No informado';
-                }
-
-                return `<a href="mailto:${email}" style="color:#1d2572; text-decoration:none;">${escapeHTML(email)}</a>`;
-            };
-
-            const formatAddress = (hotel) => {
-                const address = [hotel?.direccion, hotel?.ciudad].filter(Boolean).join(', ');
-                return address || 'No informado';
-            };
-
-            const normalizeText = (value) => {
-                if (!value) {
-                    return '';
-                }
-
-                return value
-                    .toString()
-                    .toLowerCase()
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '');
-            };
-
-            const parseDateValue = (value) => {
-                if (!value) {
-                    return null;
-                }
-
-                const date = new Date(value);
-                return Number.isNaN(date.getTime()) ? null : date;
-            };
-
-            const datesOverlap = (startA, endA, startB, endB) => {
-                return startA <= endB && startB <= endA;
-            };
-
-            const roomHasBlockingReservation = (room, startDate, endDate) => {
-                if (!room || !Array.isArray(room.reservas) || !room.reservas.length) {
-                    return false;
-                }
-
-                return room.reservas.some((reservation) => {
-                    const reservationStart = parseDateValue(reservation?.fechaEntrada);
-                    const reservationEnd = parseDateValue(reservation?.fechaSalida);
-
-                    if (!reservationStart || !reservationEnd) {
-                        return false;
-                    }
-
-                    const status = typeof reservation?.estadoReserva === 'string'
-                        ? reservation.estadoReserva.toUpperCase()
-                        : '';
-
-                    if (status === 'CANCELADA') {
-                        return false;
-                    }
-
-                    return datesOverlap(startDate, endDate, reservationStart, reservationEnd);
-                });
-            };
-
-            const hasAvailabilityInRange = (hotel, startDate, endDate) => {
-                if (!hotel) {
-                    return false;
-                }
-
-                if (!Array.isArray(hotel?.habitaciones) || !hotel.habitaciones.length) {
-                    return hotel.activo !== false;
-                }
-
-                return hotel.habitaciones.some((room) => {
-                    if (!room) {
-                        return false;
-                    }
-
-                    const estado = typeof room.estado === 'string' ? room.estado.toUpperCase() : '';
-                    const isRoomActive = room.activa !== false;
-                    const isRoomAvailableByStatus = !estado || estado === 'DISPONIBLE';
-
-                    if (!isRoomActive || !isRoomAvailableByStatus) {
-                        return false;
-                    }
-
-                    return !roomHasBlockingReservation(room, startDate, endDate);
-                });
-            };
-
-            const matchesHotelTerm = (hotel, normalizedTerm) => {
-                if (!normalizedTerm) {
-                    return false;
-                }
-
-                const fields = [
-                    hotel?.nombre,
-                    hotel?.ciudad,
-                    hotel?.direccion,
-                    hotel?.descripcion
-                ];
-
-                return fields.some((field) => normalizeText(field).includes(normalizedTerm));
-            };
-
-            const clearDateErrors = () => {
-                if (checkInInput) {
-                    checkInInput.setCustomValidity('');
-                }
-
-                if (checkOutInput) {
-                    checkOutInput.setCustomValidity('');
-                }
-            };
-
-            const getDateRange = () => {
-                const startDate = parseDateValue(checkInInput?.value);
-                const endDate = parseDateValue(checkOutInput?.value);
-
-                if (!startDate && !endDate) {
-                    return { hasRange: false };
-                }
-
-                if (!startDate) {
-                    return {
-                        hasRange: false,
-                        error: 'Selecciona la fecha de entrada.',
-                        target: 'start'
-                    };
-                }
-
-                if (!endDate) {
-                    return {
-                        hasRange: false,
-                        error: 'Selecciona la fecha de salida.',
-                        target: 'end'
-                    };
-                }
-
-                if (endDate < startDate) {
-                    return {
-                        hasRange: false,
-                        error: 'La fecha de salida debe ser posterior a la de entrada.',
-                        target: 'end'
-                    };
-                }
-
-                return { hasRange: true, start: startDate, end: endDate };
-            };
-
-            const buildAmenities = (hotel) => {
-                const amenities = [];
-
-                if (hotel?.desayunoIncluido) {
-                    amenities.push('Desayuno incluido');
-                }
-
-                if (hotel?.tieneParking) {
-                    amenities.push('Parking disponible');
-                }
-
-                if (hotel?.permiteMascotas) {
-                    amenities.push('Acepta mascotas');
-                }
-
-                return amenities.length ? amenities.join(' · ') : 'Sin información de servicios';
-            };
-
-            const buildCapacityTitle = (hotel) => {
-                if (hotel?.capacidadTotal || hotel?.capacidadTotal === 0) {
-                    return `Capacidad total: ${hotel.capacidadTotal} plazas`;
-                }
-
-                return 'Capacidad no informada';
-            };
-
-            const showMessage = (title, subtitle) => {
-                hotelsList.innerHTML = `
-                    <article class="hotel-card glass">
-                        <div class="hotel-info">
-                            <h2 class="hotel-title">${escapeHTML(title)}</h2>
-                            <p class="hotel-desc">${escapeHTML(subtitle)}</p>
-                        </div>
-                    </article>
-                `;
-            };
-
-            const getHotelImage = (hotel) => {
-                if (hotel && hotel.imagenUrl) {
-                    return hotel.imagenUrl;
-                }
-
-                const mapaImagenes = {
-                    madrid: 'Hotel Madrid.png',
-                    barcelona: 'Barcelona.png',
-                    granada: 'Granada.png',
-                    sevilla: 'Sevilla.png',
-                    valencia: 'Salamanca.png',
-                    bilbao: 'Norte.png',
-                malaga: 'chalet.png',
-                    alicante: 'Alicante.png',
-                    cordoba: 'Cordoba.png',
-                    salamanca: 'Salamanca.png',
-                    zaragoza: 'Zaragoza.png',
-                    murcia: 'Pueblo.png',
-                    norte: 'Norte.png',
-                    pueblo: 'Pueblo.png',
-                    chalet: 'chalet.png',
-                    cabana: 'cABAÑA.png'
-                };
-
-                const nombre = normalizeText(hotel?.nombre).replace(/\s+/g, '');
-                const ciudad = normalizeText(hotel?.ciudad).replace(/\s+/g, '');
-
-                for (const clave in mapaImagenes) {
-                    if (nombre.includes(clave) || ciudad.includes(clave)) {
-                        return `images/${mapaImagenes[clave]}`;
-                    }
-                }
-
-                return 'images/Barcelona.png';
-            };
-
-            const createHotelCard = (hotel) => {
-                const card = document.createElement('article');
-                card.className = 'hotel-card glass';
-
-                const image = document.createElement('img');
-                image.className = 'hotel-img';
-                image.alt = `Hotel ${hotel?.nombre ?? 'sin nombre'}`;
-                image.src = getHotelImage(hotel);
-                card.appendChild(image);
-
-                const info = document.createElement('div');
-                info.className = 'hotel-info';
-
-                const title = document.createElement('h2');
-                title.className = 'hotel-title';
-                title.textContent = hotel?.nombre ?? 'Hotel sin nombre';
-                info.appendChild(title);
-
-                const description = document.createElement('p');
-                description.className = 'hotel-desc';
-                description.textContent = hotel?.descripcion ?? 'Sin descripción disponible';
-                info.appendChild(description);
-
-                const stars = document.createElement('p');
-                stars.className = 'hotel-desc';
-                const estrellas = hotel?.estrellas ? '⭐'.repeat(Math.min(hotel.estrellas, 5)) : 'Sin clasificación';
-                stars.textContent = `Categoría: ${estrellas}`;
-                info.appendChild(stars);
-
-                const address = document.createElement('p');
-                address.className = 'hotel-address';
-                address.innerHTML = `<strong>Dirección:</strong> ${escapeHTML(formatAddress(hotel))}`;
-                info.appendChild(address);
-
-                const email = document.createElement('p');
-                email.className = 'hotel-email';
-                email.innerHTML = `<strong>Email:</strong> ${formatEmail(hotel?.email)}`;
-                info.appendChild(email);
-
-                const phone = document.createElement('p');
-                phone.className = 'hotel-phone';
-                phone.innerHTML = `<strong>Telefono:</strong> ${formatPhone(hotel?.telefono)}`;
-                info.appendChild(phone);
-
-                const amenities = document.createElement('p');
-                amenities.className = 'hotel-desc';
-                amenities.innerHTML = `<strong>Servicios:</strong> ${escapeHTML(buildAmenities(hotel))}`;
-                info.appendChild(amenities);
-
-                const button = document.createElement('button');
-                button.className = 'btn-primary';
-                button.type = 'button';
-                button.textContent = 'Ver habitaciones';
-                button.addEventListener('click', () => {
-                    const roomsUrl = new URL('habitaciones.html', window.location.href);
-
-                    if (hotel?.id) {
-                        roomsUrl.searchParams.set('idHotel', hotel.id);
-                    }
-
-                    if (hotel?.nombre) {
-                        roomsUrl.searchParams.set('hotelNombre', hotel.nombre);
-                    }
-
-                    roomsUrl.searchParams.set('redirect', window.location.href);
-                    window.location.href = roomsUrl.toString();
-                });
-                info.appendChild(button);
-
-                card.appendChild(info);
-
-                return card;
-            };
-
-            const renderHotels = (list) => {
-                if (!Array.isArray(list) || !list.length) {
-                    showMessage('No se encontraron hoteles', 'Prueba con otros criterios de búsqueda.');
-                    return;
-                }
-
-                hotelsList.innerHTML = '';
-                const fragment = document.createDocumentFragment();
-                list.forEach((hotel) => fragment.appendChild(createHotelCard(hotel)));
-                hotelsList.appendChild(fragment);
-            };
-
-            const loadHotels = async () => {
-                showMessage('Cargando hoteles...', 'Estamos consultando la base de datos.');
-
-                try {
-                    const response = await fetch(API_URL, {
-                        headers: { 'Accept': 'application/json' }
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Error ${response.status}`);
-                    }
-
-                    const hotels = await response.json();
-
-                    if (!Array.isArray(hotels) || !hotels.length) {
-                        hotelsState.all = [];
-                        showMessage('No se encontraron hoteles', 'Añade hoteles desde el panel de administración.');
-                        return [];
-                    }
-
-                    hotelsState.all = hotels;
-                    renderHotels(hotelsState.all);
-                    return hotelsState.all;
-                } catch (error) {
-                    console.error('No se pudieron obtener los hoteles', error);
-                    showMessage('Ups, algo salió mal', 'Verifica que la API esté en ejecución e inténtalo de nuevo.');
-                    hotelsState.all = [];
-                    return [];
-                }
-            };
-
-            const handleSearchSubmit = async (event) => {
+            async function login(event){
                 event.preventDefault();
+                const email = document.getElementById("landingLoginEmail").value.trim();
+                const password = document.getElementById("landingLoginPassword").value;
+                const feedback = document.getElementById("landingLoginFeedback");
+                feedback.textContent = "Iniciando sesión...";
+                feedback.className = "landing-feedback info";
 
-                if (!hotelsState.all.length) {
-                    const loadedHotels = await loadHotels();
-
-                    if (!loadedHotels.length) {
-                        return;
+                try{
+                    const resp = await fetch(URL_API + "/auth/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: email, contrasenna: password })
+                    });
+                    const data = await resp.json();
+                    if(resp.ok && data.usuario){
+                        feedback.textContent = "Bienvenido, redirigiendo...";
+                        feedback.className = "landing-feedback success";
+                        if(SesionApp && SesionApp.guardarSesion){
+                            SesionApp.guardarSesion(data.usuario);
+                        }
+                        setTimeout(() => window.location.href = "inicio.html", 600);
+                    }else{
+                        feedback.textContent = data.error || "No se pudo iniciar sesión";
+                        feedback.className = "landing-feedback error";
                     }
+                }catch(err){
+                    feedback.textContent = "Error de conexión con el servidor";
+                    feedback.className = "landing-feedback error";
                 }
+            }
 
-                const searchValue = normalizeText(searchTermInput?.value).trim();
-                const dateRange = getDateRange();
+            async function register(event){
+                event.preventDefault();
+                const nombre = document.getElementById("landingRegisterNombre").value.trim();
+                const apellido = document.getElementById("landingRegisterApellido").value.trim();
+                const email = document.getElementById("landingRegisterEmail").value.trim();
+                const telefono = document.getElementById("landingRegisterTelefono").value.trim();
+                const password = document.getElementById("landingRegisterPassword").value;
+                const feedback = document.getElementById("landingRegisterFeedback");
+                feedback.textContent = "Creando cuenta...";
+                feedback.className = "landing-feedback info";
 
-                if (dateRange?.error) {
-                    const targetInput = dateRange.target === 'start'
-                        ? checkInInput
-                        : checkOutInput || checkInInput;
-
-                    if (targetInput) {
-                        targetInput.setCustomValidity(dateRange.error);
-                        targetInput.reportValidity();
+                try{
+                    const resp = await fetch(URL_API + "/auth/registro", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            email: email,
+                            contrasenna: password,
+                            nombre: nombre,
+                            apellido: apellido,
+                            telefono: telefono
+                        })
+                    });
+                    const data = await resp.json();
+                    if(resp.ok && data.usuario){
+                        feedback.textContent = "Cuenta creada, redirigiendo...";
+                        feedback.className = "landing-feedback success";
+                        if(SesionApp && SesionApp.guardarSesion){
+                            SesionApp.guardarSesion(data.usuario);
+                        }
+                        setTimeout(() => window.location.href = "inicio.html", 600);
+                    }else{
+                        feedback.textContent = data.error || "No se pudo registrar el usuario";
+                        feedback.className = "landing-feedback error";
                     }
-                    return;
+                }catch(err){
+                    feedback.textContent = "Error de conexión con el servidor";
+                    feedback.className = "landing-feedback error";
                 }
-
-                clearDateErrors();
-
-                const hasSearchTerm = Boolean(searchValue);
-                const hasDateFilter = Boolean(dateRange?.hasRange);
-
-                if (!hasSearchTerm && !hasDateFilter) {
-                    renderHotels(hotelsState.all);
-                    return;
-                }
-
-                const filteredHotels = hotelsState.all.filter((hotel) => {
-                    const matchesText = hasSearchTerm ? matchesHotelTerm(hotel, searchValue) : false;
-                    const matchesDates = hasDateFilter
-                        ? hasAvailabilityInRange(hotel, dateRange.start, dateRange.end)
-                        : false;
-
-                    return (hasSearchTerm && matchesText) || (hasDateFilter && matchesDates);
-                });
-
-                if (!filteredHotels.length) {
-                    showMessage('Sin coincidencias', 'No hay hoteles que cumplan los criterios indicados.');
-                    return;
-                }
-
-                renderHotels(filteredHotels);
-            };
-
-            if (searchForm) {
-                searchForm.addEventListener('submit', handleSearchSubmit);
             }
 
-            if (checkInInput) {
-                checkInInput.addEventListener('input', clearDateErrors);
-            }
+            document.addEventListener("DOMContentLoaded", function(){
+                if(SesionApp && SesionApp.obtenerSesion && SesionApp.obtenerSesion()){
+                    window.location.href = "inicio.html";
+                    return;
+                }
+                const loginBtn = document.getElementById("landingLoginBtn");
+                const registerBtn = document.getElementById("landingRegisterBtn");
+                const loginForm = document.getElementById("landingLoginForm");
+                const registerForm = document.getElementById("landingRegisterForm");
 
-            if (checkOutInput) {
-                checkOutInput.addEventListener('input', clearDateErrors);
-            }
+                if(loginBtn){ loginBtn.addEventListener("click", () => setMode("login")); }
+                if(registerBtn){ registerBtn.addEventListener("click", () => setMode("register")); }
+                if(loginForm){ loginForm.addEventListener("submit", login); }
+                if(registerForm){ registerForm.addEventListener("submit", register); }
 
-            document.addEventListener('DOMContentLoaded', loadHotels);
+                setMode("login");
+            });
         })();
     </script>
 </body>
 </html>
-
-

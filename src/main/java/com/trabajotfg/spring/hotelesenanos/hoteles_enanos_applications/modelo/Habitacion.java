@@ -1,7 +1,7 @@
 package com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -53,9 +53,9 @@ public class Habitacion {
     @Column(nullable = false)
     private Boolean activa = true;
 
-    @JsonBackReference("hotel-habitaciones")
     @ManyToOne
     @JoinColumn(name="hotel_id", nullable = false)
+    @JsonIgnoreProperties("habitaciones")
     private Hotel hotel;
 
     @JsonIgnore

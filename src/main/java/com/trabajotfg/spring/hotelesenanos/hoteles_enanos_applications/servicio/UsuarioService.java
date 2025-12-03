@@ -10,14 +10,14 @@ import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.Utils.Cif
 import java.util.Optional;
 import java.util.List;
 
-//Capa intermediaria entre usuario y servicio
+// Servicio central que coordina validaciones, cifrado y persistencia de usuarios
 @Service
 public class UsuarioService {
     
     @Autowired
     private RepoUsuario repoUsuario;
 
-    //Crear un nuev usuario 
+    // Crear un nuevo usuario aplicando cifrado y valores por defecto
     public Usuario crerUsuario(Usuario usuario) throws Exception{
         String contrasenna = usuario.getContrasenna();
         String contrasennaSegura = Cifrado.cifrarPassword(contrasenna);
@@ -37,13 +37,12 @@ public class UsuarioService {
         return repoUsuario.save(usuario);
     }
 
-    //Comparar emails
-
+    // Comprueba si ya existe el correo para evitar duplicidades
     public boolean existePorEmail(String email){
         return repoUsuario.existsByEmail(email);
     }
 
-    //Registrar un nuevo usuario
+    // Registro usado por el frontend cuando no hay sesión activa
     public Usuario registrarUsuario(String nombre, String apellido, String email, String contrasenna, String telefono) throws Exception{
         if(existeEmail(email)){
             // Mensaje estandarizado para los tests
@@ -61,7 +60,7 @@ public class UsuarioService {
         return crerUsuario(nuevoUsuario);
     }
     
-    //Iniciar sesion 
+    // Inicio de sesión clásico: busca correo y compara contraseñas cifradas
     public Usuario iniciarSesion(String email, String contrasenna) throws Exception{
         Optional<Usuario> usuario = repoUsuario.findByEmail(email);
 
@@ -79,38 +78,38 @@ public class UsuarioService {
 
     }
 
-    //Buscar todos los usuarios 
+    // Listado completo usado en paneles de administración
     public List<Usuario> listaUsuarios(){
         return repoUsuario.findAll();
     }
 
-    //Buscar usuarios por ID
+    // Lookup por ID devolviendo Optional para que la capa web emita 404
     public Optional<Usuario> buscarPorID(int id){
         return repoUsuario.findById(id);
 
     }
 
-    //Buscar por email 
+    // Lookup por email reutilizado en autenticación y validaciones
     public Optional<Usuario> buscarPorEmail(String email){
         return repoUsuario.findByEmail(email);
     }
 
-    //Eliminar por ID
+    // Eliminación física (se usa para limpiar datos de pruebas)
     public void eliminarUsuario(Integer id){
         repoUsuario.deleteById(id);
     }
 
-    //Actualizar usuario existente
+    // Guardado directo de cambios (manteniendo cifrado existente)
     public Usuario actualizarUsuario(Usuario usuario){
       return  repoUsuario.save(usuario);
     }
 
-    //Comprobar si el email ya existe
+    // Expone la existencia del email a otras capas
     public boolean existeEmail(String email){
         return repoUsuario.existsByEmail(email);
     }
 
-    //Comprobar si la contraseña es correcta
+    // Comprueba si la contraseña proporcionada coincide con la almacenada
     public boolean comprobarContrasenna(String email, String contrasenna){
         Optional<Usuario> usuarioList = buscarPorEmail(email);
         if(usuarioList.isPresent()){
@@ -120,7 +119,7 @@ public class UsuarioService {
         return false;
     }
 
-    //Cambiar la contraseña del usuario
+    // Cambia la contraseña después de validar la actual
     public boolean cambiarContrasenna(String email, String contrasennaActual, String nuevaContrasenna) throws Exception{
         Optional<Usuario> usuarioList = buscarPorEmail(email);
         if(!usuarioList.isPresent()){
@@ -129,7 +128,7 @@ public class UsuarioService {
 
         Usuario usuario = usuarioList.get();
 
-        //Comprobar que la contraseña actual es correcta
+        // Validamos que la contraseña actual sea correcta antes de cifrar la nueva
         if(!contrasennaCoincide(contrasennaActual, usuario)){
             return false;
         }
@@ -140,6 +139,7 @@ public class UsuarioService {
         return true;
     }
 
+    // Permite comparar contraseñas tanto cifradas como posibles datos legados en texto plano
     private boolean contrasennaCoincide(String contrasenna, Usuario usuario){
         if(usuario == null || contrasenna == null){
             return false;
@@ -152,7 +152,7 @@ public class UsuarioService {
         return contrasenna.equals(usuario.getContrasenna());
     }
 
-    //Activar usuario
+    // Marca un usuario como activo para permitir el acceso
     public void activarUsuario(Integer id){
         Optional<Usuario> usuarioList = buscarPorID(id);
         if(usuarioList.isPresent()){
@@ -162,7 +162,7 @@ public class UsuarioService {
         }
     }
 
-    //Desactivar usuario
+    // Marca un usuario como inactivo sin eliminar sus datos
     public void desactivarUsuario(Integer id){
         Optional<Usuario> usuarioList = buscarPorID(id);
         if(usuarioList.isPresent()){

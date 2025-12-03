@@ -1,7 +1,10 @@
 (function(){
+    // Utilidad compartida para guardar/consultar la sesion del usuario en localStorage
     var CLAVE_SESION = "usuarioSesion";
+    // Marcador usado para recordar que el historial debe abrirse al volver a usuario.html
     var CLAVE_HISTORIAL = "abrirHistorial";
 
+    // Wrapper para no repetir el chequeo de DOMContentLoaded
     function ejecutarCuandoListo(callback){
         if(document.readyState === "loading"){
             document.addEventListener("DOMContentLoaded", callback);
@@ -71,6 +74,7 @@
         }
     }
 
+    // Marca que al volver a usuario.html se debe abrir el historial de reservas
     function marcarHistorialPendiente(){
         try{
             localStorage.setItem(CLAVE_HISTORIAL, "1");
@@ -91,6 +95,7 @@
         }
     }
 
+    // Al cargar la pagina se sincroniza el header y se engancha el boton de salir
     ejecutarCuandoListo(function(){
         actualizarCabeceraSesion();
         var logoutBtn = document.getElementById("headerLogoutBtn");
@@ -102,6 +107,7 @@
         }
     });
 
+    // Mostramos la API publica para que otros scripts puedan usarla
     window.SesionApp = window.SesionApp || {};
     window.SesionApp.obtenerSesion = obtenerSesionGuardada;
     window.SesionApp.guardarSesion = guardarSesion;

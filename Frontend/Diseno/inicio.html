@@ -1,0 +1,425 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoteles Enanos - Reserva tu estancia</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aboreto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="logo.svg">
+</head>
+<body>
+    <header class="glass header">
+        <div class="logo" style="display:flex; flex-direction:column; align-items:center; gap:2px; background:none; box-shadow:none; padding:0;">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                <polygon points="20,6 6,18 8,18 8,34 32,34 32,18 34,18" fill="#FFF"></polygon>
+                <rect x="14" y="24" width="6" height="10" fill="#E8E8E8"></rect>
+                <rect x="20" y="24" width="6" height="6" fill="#E8E8E8"></rect>
+            </svg>
+            <span style="font-family:'Aboreto',serif; color:#FFF; font-size:12px; line-height:22px; font-weight:bold; letter-spacing:2px;">Hoteles Enanos</span>
+        </div>
+        <nav>
+            <ul class="nav-list">
+                <li><a href="inicio.html" class="nav-link">Inicio</a></li>
+                <li><a href="habitaciones.html" class="nav-link">Hoteles</a></li>
+                <li><a href="usuario.html" class="nav-link">Usuarios</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <button type="button" class="btn-secondary" id="headerLogoutBtn">Cerrar sesión</button>
+        </div>
+    </header>
+    <main>
+        <section class="hero glass">
+            <h1 class="title-abro">Encuentra tu hotel ideal</h1>
+            <p class="subtitle-urbanist">Haz tu reserva para una mejor experiencia.</p>
+            <form class="search-form glass" id="hotelSearchForm" novalidate>
+                <input type="text" placeholder="Destino o nombre del hotel" class="input-search" id="searchTerm" list="hotelsSuggestions" autocomplete="off">
+                <datalist id="hotelsSuggestions"></datalist>
+                <button type="submit" class="btn-primary">Buscar</button>
+            </form>
+        </section>
+        <section class="hotels-list" id="hotelsList"></section>
+    </main>
+
+    <footer class="glass footer">
+        <p class="footer-text">&copy; 2025 Hoteles Enanos. Todos los derechos reservados.</p>
+    </footer>
+    <script src="../TypeScript/session.js"></script>
+    <script>
+        (function () {
+            // Elementos de la página y lista donde guardaremos los hoteles
+            const hotelsList = document.getElementById('hotelsList');
+            const searchForm = document.getElementById('hotelSearchForm');
+            const searchTermInput = document.getElementById('searchTerm');
+            const suggestionsList = document.getElementById('hotelsSuggestions');
+            const hotelsState = {
+                all: []
+            };
+
+            if (!hotelsList) {
+                return;
+            }
+
+            // Detecta la IP/host visible y envía todo al backend en 8080
+            const resolvedProtocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+            const resolvedHost = window.location.hostname && window.location.hostname !== ''
+                ? window.location.hostname
+                : (window.location.host ? window.location.host.split(':')[0] : 'localhost');
+            const API_URL = resolvedProtocol + '//' + resolvedHost + ':8080/api/hotel';
+
+            // Funciones pequeñas para limpiar y mostrar texto, teléfono, etc.
+            const escapeHTML = (value) => {
+                if (value === null || value === undefined) {
+                    return '';
+                }
+
+                return value.toString()
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            };
+
+            const formatPhone = (phone) => {
+                if (!phone) {
+                    return 'No informado';
+                }
+
+                const sanitized = phone.toString().replace(/\s+/g, '');
+                return `<a href="tel:${sanitized}" style="color:#1d2572; text-decoration:none;">${escapeHTML(phone)}</a>`;
+            };
+
+            const formatEmail = (email) => {
+                if (!email) {
+                    return 'No informado';
+                }
+
+                return `<a href="mailto:${email}" style="color:#1d2572; text-decoration:none;">${escapeHTML(email)}</a>`;
+            };
+
+            const formatAddress = (hotel) => {
+                const address = [hotel?.direccion, hotel?.ciudad].filter(Boolean).join(', ');
+                return address || 'No informado';
+            };
+
+            const normalizeText = (value) => {
+                if (!value) {
+                    return '';
+                }
+
+                return value
+                    .toString()
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '');
+            };
+
+            const updateSuggestions = (term) => {
+                if (!suggestionsList) {
+                    return;
+                }
+                const normalized = normalizeText(term).trim();
+                const source = hotelsState.all || [];
+                const filtered = normalized
+                    ? source.filter((hotel) => matchesHotelTerm(hotel, normalized))
+                    : source;
+                suggestionsList.innerHTML = '';
+                const fragment = document.createDocumentFragment();
+                filtered.slice(0, 20).forEach((hotel) => {
+                    if (!hotel?.nombre) {
+                        return;
+                    }
+                    const option = document.createElement('option');
+                    option.value = hotel.nombre;
+                    fragment.appendChild(option);
+                });
+                suggestionsList.appendChild(fragment);
+            };
+
+            const matchesHotelTerm = (hotel, normalizedTerm) => {
+                if (!normalizedTerm) {
+                    return false;
+                }
+
+                const fields = [
+                    hotel?.nombre,
+                    hotel?.ciudad,
+                    hotel?.direccion,
+                    hotel?.descripcion
+                ];
+
+                return fields.some((field) => normalizeText(field).includes(normalizedTerm));
+            };
+
+            const buildHotelKey = (hotel) => {
+                const normalizedName = normalizeText(hotel?.nombre).trim();
+                const normalizedCity = normalizeText(hotel?.ciudad).trim();
+                const normalizedAddress = normalizeText(hotel?.direccion).trim();
+                const textualKey = [normalizedName, normalizedCity, normalizedAddress].filter(Boolean).join('|');
+
+                if (textualKey) {
+                    return textualKey;
+                }
+
+                if (typeof hotel?.id !== 'undefined') {
+                    return String(hotel.id);
+                }
+
+                return JSON.stringify(hotel ?? {});
+            };
+
+            const buildAmenities = (hotel) => {
+                const amenities = [];
+
+                if (hotel?.desayunoIncluido) {
+                    amenities.push('Desayuno incluido');
+                }
+
+                if (hotel?.tieneParking) {
+                    amenities.push('Parking disponible');
+                }
+
+                if (hotel?.permiteMascotas) {
+                    amenities.push('Acepta mascotas');
+                }
+
+                return amenities.length ? amenities.join(' · ') : 'Sin información de servicios';
+            };
+
+            const buildCapacityTitle = (hotel) => {
+                if (hotel?.capacidadTotal || hotel?.capacidadTotal === 0) {
+                    return `Capacidad total: ${hotel.capacidadTotal} plazas`;
+                }
+
+                return 'Capacidad no informada';
+            };
+
+            const showMessage = (title, subtitle) => {
+                // Pantalla de mensaje genérica (cargando, sin resultados, etc.)
+                hotelsList.innerHTML = `
+                    <article class="hotel-card glass">
+                        <div class="hotel-info">
+                            <h2 class="hotel-title">${escapeHTML(title)}</h2>
+                            <p class="hotel-desc">${escapeHTML(subtitle)}</p>
+                        </div>
+                    </article>
+                `;
+            };
+
+            const getHotelImage = (hotel) => {
+                if (hotel && hotel.imagenUrl) {
+                    return hotel.imagenUrl;
+                }
+
+                // Imagen de apoyo según el nombre/ciudad cuando no hay URL propia
+                const mapaImagenes = {
+                    madrid: 'Hotel Madrid.png',
+                    barcelona: 'Barcelona.png',
+                    granada: 'Granada.png',
+                    sevilla: 'Sevilla.png',
+                    valencia: 'Salamanca.png',
+                    bilbao: 'Norte.png',
+                malaga: 'chalet.png',
+                    alicante: 'Alicante.png',
+                    cordoba: 'Cordoba.png',
+                    salamanca: 'Salamanca.png',
+                    zaragoza: 'Zaragoza.png',
+                    murcia: 'Pueblo.png',
+                    norte: 'Norte.png',
+                    pueblo: 'Pueblo.png',
+                    chalet: 'chalet.png',
+                    cabana: 'cABAÑA.png'
+                };
+
+                const nombre = normalizeText(hotel?.nombre).replace(/\s+/g, '');
+                const ciudad = normalizeText(hotel?.ciudad).replace(/\s+/g, '');
+
+                for (const clave in mapaImagenes) {
+                    if (nombre.includes(clave) || ciudad.includes(clave)) {
+                        return `images/${mapaImagenes[clave]}`;
+                    }
+                }
+
+                return 'images/Barcelona.png';
+            };
+
+            const createHotelCard = (hotel) => {
+                // Crea la tarjeta que se ve en pantalla con info y botón de habitaciones
+                const card = document.createElement('article');
+                card.className = 'hotel-card glass';
+
+                const image = document.createElement('img');
+                image.className = 'hotel-img';
+                image.alt = `Hotel ${hotel?.nombre ?? 'sin nombre'}`;
+                image.src = getHotelImage(hotel);
+                card.appendChild(image);
+
+                const info = document.createElement('div');
+                info.className = 'hotel-info';
+
+                const title = document.createElement('h2');
+                title.className = 'hotel-title';
+                title.textContent = hotel?.nombre ?? 'Hotel sin nombre';
+                info.appendChild(title);
+
+                const description = document.createElement('p');
+                description.className = 'hotel-desc';
+                description.textContent = hotel?.descripcion ?? 'Sin descripción disponible';
+                info.appendChild(description);
+
+                const stars = document.createElement('p');
+                stars.className = 'hotel-desc';
+                //Pone las estrellas del hotel en funcion de su valor
+                const estrellas = hotel?.estrellas ? '⭐'.repeat(Math.min(hotel.estrellas, 5)) : 'Sin clasificación';
+                stars.textContent = `Categoría: ${estrellas}`;
+                info.appendChild(stars);
+
+                const address = document.createElement('p');
+                address.className = 'hotel-address';
+                address.innerHTML = `<strong>Dirección:</strong> ${escapeHTML(formatAddress(hotel))}`;
+                info.appendChild(address);
+
+                const email = document.createElement('p');
+                email.className = 'hotel-email';
+                email.innerHTML = `<strong>Email:</strong> ${formatEmail(hotel?.email)}`;
+                info.appendChild(email);
+
+                const phone = document.createElement('p');
+                phone.className = 'hotel-phone';
+                phone.innerHTML = `<strong>Telefono:</strong> ${formatPhone(hotel?.telefono)}`;
+                info.appendChild(phone);
+
+                const amenities = document.createElement('p');
+                amenities.className = 'hotel-desc';
+                amenities.innerHTML = `<strong>Servicios:</strong> ${escapeHTML(buildAmenities(hotel))}`;
+                info.appendChild(amenities);
+
+                const button = document.createElement('button');
+                button.className = 'btn-primary';
+                button.type = 'button';
+                button.textContent = 'Ver habitaciones';
+                button.addEventListener('click', () => {
+                    const roomsUrl = new URL('habitaciones.html', window.location.href);
+
+                    if (hotel?.id) {
+                        roomsUrl.searchParams.set('idHotel', hotel.id);
+                    }
+
+                    if (hotel?.nombre) {
+                        roomsUrl.searchParams.set('hotelNombre', hotel.nombre);
+                    }
+
+                    roomsUrl.searchParams.set('redirect', window.location.href);
+                    window.location.href = roomsUrl.toString();
+                });
+                info.appendChild(button);
+
+                card.appendChild(info);
+
+                return card;
+            };
+            //pone una lista de hoteles en pantalla y en caso de que no haya muestra mensajes
+            const renderHotels = (list) => {
+                if (!Array.isArray(list) || !list.length) {
+                    showMessage('No se encontraron hoteles', 'Prueba con otros criterios de búsqueda.');
+                    return;
+                }
+
+                hotelsList.innerHTML = '';
+                const fragment = document.createDocumentFragment();
+                list.forEach((hotel) => fragment.appendChild(createHotelCard(hotel)));
+                hotelsList.appendChild(fragment);
+            };
+
+            const loadHotels = async () => {
+                // Pide los hoteles a la API y guarda lo recibido para reutilizarlo
+                showMessage('Cargando hoteles...', 'Por favor, espera un momento.');
+
+                try {
+                    const response = await fetch(API_URL, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error ${response.status}`);
+                    }
+
+                    const hotels = await response.json();
+
+                    if (!Array.isArray(hotels) || !hotels.length) {
+                        hotelsState.all = [];
+                        showMessage('No se encontraron hoteles');
+                        return [];
+                    }
+                    
+                    const uniqueMap = new Map();
+                    hotels.forEach((hotel) => {
+                        if (!hotel) {
+                            return;
+                        }
+                        const key = buildHotelKey(hotel);
+                        if (!uniqueMap.has(key)) {
+                            uniqueMap.set(key, hotel);
+                        }
+                    });
+                    const uniqueHotels = Array.from(uniqueMap.values());
+
+                    hotelsState.all = uniqueHotels;
+                    renderHotels(hotelsState.all);
+                    updateSuggestions(searchTermInput?.value || '');
+                    return hotelsState.all;
+                } catch (error) {
+                    console.error('No se pudieron obtener los hoteles', error);
+                    showMessage('Ups, algo salió mal');
+                    hotelsState.all = [];
+                    return [];
+                }
+            };
+
+            const handleSearchSubmit = async (event) => {
+                event.preventDefault();
+
+                if (!hotelsState.all.length) {
+                    const loadedHotels = await loadHotels();
+                    if (!loadedHotels.length) {
+                        return;
+                    }
+                }
+
+                const searchValue = normalizeText(searchTermInput?.value).trim();
+                if (!searchValue) {
+                    renderHotels(hotelsState.all);
+                    return;
+                }
+
+                const filteredHotels = hotelsState.all.filter((hotel) => {
+                    return matchesHotelTerm(hotel, searchValue);
+                });
+
+                if (!filteredHotels.length) {
+                    showMessage('No hay hoteles que cumplan los criterios.');
+                    return;
+                }
+
+                renderHotels(filteredHotels);
+            };
+
+            if (searchForm) {
+                searchForm.addEventListener('submit', handleSearchSubmit);
+            }
+
+            if (searchTermInput) {
+                searchTermInput.addEventListener('input', function(event){
+                    updateSuggestions(event.target.value);
+                });
+            }
+
+            // Nada más entrar en la página pedimos la lista de hoteles a la API
+            document.addEventListener('DOMContentLoaded', loadHotels);
+        })();
+    </script>
+</body>
+</html>

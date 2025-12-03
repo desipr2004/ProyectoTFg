@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
+/**
+ * Controlador encargado de las operaciones públicas de autenticación.
+ * Registra cuentas y valida credenciales para que el frontend gestione sesiones.
+ */
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/auth")
@@ -23,7 +27,7 @@ public class AuthControlador {
     @Autowired
     private UsuarioService usuarioService;
 
-    //Post /api/auth/login
+    // Post /api/auth/registro -> crea un usuario nuevo si no existe el correo
     @PostMapping("/registro")
     public Map<String, Object> registro(@RequestBody Usuario usuario) throws Exception {
         Map<String, Object> res =new HashMap<>();        
@@ -48,6 +52,7 @@ public class AuthControlador {
     
 }
 
+    // Post /api/auth/login -> valida credenciales y devuelve al usuario autenticado
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> login, jakarta.servlet.http.HttpSession session) {
     Map<String, Object> res = new HashMap<>();
@@ -78,42 +83,4 @@ public class AuthControlador {
     }
     return res; 
 }
-
-    @PostMapping("/registro-rapido")
-    public Map<String, Object> registroRapido(@RequestBody Map<String, String> nuevoUsuario) {
-        Map<String, Object> res = new HashMap<>();
-        try{
-            String email = nuevoUsuario.get("email");
-            String contrasenna = nuevoUsuario.get("contrasenna");
-
-            if(email == null || contrasenna == null){
-                res.put("error", "Debes indicar correo y contrase��a");
-                return res;
-            }
-
-            if(usuarioService.existePorEmail(email)){
-                res.put("error", "Ya existe un usuario con ese correo");
-                return res;
-            }
-
-            Usuario usuario = new Usuario();
-            usuario.setEmail(email);
-            usuario.setContrasenna(contrasenna);
-
-            String alias = email.contains("@") ? email.substring(0, email.indexOf('@')) : "Cliente";
-            usuario.setNombre(nuevoUsuario.getOrDefault("nombre", alias));
-            usuario.setApellido(nuevoUsuario.getOrDefault("apellido", "Web"));
-            usuario.setTelefono(nuevoUsuario.getOrDefault("telefono", ""));
-            usuario.setTipoUsuario(Usuario.UsuarioTipo.CLIENT);
-
-            Usuario usuarioCreado = usuarioService.crerUsuario(usuario);
-            res.put("mensaje", "Usuario creado correctamente");
-            res.put("usuario", usuarioCreado);
-            return res;
-        }catch(Exception e){
-            res.put("error", e.getMessage());
-            return res;
-        }
-    }
-
 }

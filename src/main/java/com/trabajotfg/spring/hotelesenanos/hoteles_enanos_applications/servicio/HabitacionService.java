@@ -14,6 +14,7 @@ import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Re
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoHabitacion;
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoReserva;
 
+// Servicio encargado de la lógica de habitaciones (CRUD, filtros y disponibilidad)
 @Service
 public class HabitacionService {
     
@@ -45,26 +46,32 @@ public class HabitacionService {
     List<Habitacion> findByEstadoAndHotel(Habitacion.EstadoHabitacion estado, Hotel hotel);
      */
        // List<Habitacion> findByHotel(Hotel hotel);
+    // Devuelve todas las habitaciones sin filtros
     public List<Habitacion> listarHabitaciones(){
         return habitacionRepo.findAll();
     }
 
+    // Recupera una habitación concreta
     public Optional<Habitacion> buscarPorId(Integer id){
         return habitacionRepo.findById(id);
     }
 
+    // Guarda la información de la habitación (alta o modificación)
     public Habitacion crearActualizarHabitacion(Habitacion habitacion){
         return habitacionRepo.save(habitacion);
     }
 
+    // Elimina definitivamente una habitación
     public void eliminarHabitacion(Integer id){
         habitacionRepo.deleteById(id);
     }
 
+    // Devuelve solo habitaciones activas
     public List<Habitacion> habitacionActivo(){
         return habitacionRepo.findByActivaTrue();
     }
 
+    // Habitaciones pertenecientes a un hotel concreto
     public List<Habitacion> habitacionPorHotel(Hotel hotel){
         return habitacionRepo.findByHotel(hotel);
     }
@@ -90,6 +97,7 @@ public class HabitacionService {
      * reservas que se superpongan con el rango indicado. Si las fechas son nulas o invalidas,
      * se devuelve el listado simple de DISPONIBLE.
      */
+    // Calcula habitaciones libres comprobando solapes de reservas confirmadas/pendientes
     public List<Habitacion> buscarDisponiblesPorHotelYRango(Hotel hotel, LocalDate fechaEntrada, LocalDate fechaSalida) {
         if (hotel == null) {
             return List.of();

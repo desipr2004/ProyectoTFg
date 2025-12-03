@@ -32,4 +32,7 @@ public interface RepoReserva extends JpaRepository<Reserva, Integer> {
     @Query("SELECT r FROM Reserva r WHERE r.habitacion = :habitacion AND r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada")
     List<Reserva> findReservasSuperpuestas(@Param("habitacion") Habitacion habitacion, @Param("fechaEntrada") LocalDate fechaEntrada, @Param("fechaSalida") LocalDate fechaSalida);
 
+    List<Reserva> findByEmailUsuario(String emailUsuario);
+    List<Reserva> findByUsuarioEmail(String email);
+
 }

@@ -4,7 +4,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
-//Cifrado de contrasennas del tipo AES
+// Utilidad de cifrado simétrico (AES + Base64) empleada para las contraseñas
 public class Cifrado {
     
     private static final String CLAVE_SECRETA = "ClaveSecreta1234";
@@ -12,7 +12,7 @@ public class Cifrado {
 
 
 
-    //Metodo para cifrar
+    // Aplica cifrado AES y devuelve Base64 (fácil de persistir)
     public static String cifrarPassword(String contrasenna) throws Exception{
         try{
 
@@ -34,7 +34,7 @@ public class Cifrado {
         }
     }
 
-    //Descifrar contraseñas
+    // Descifra una contraseña almacenada para comprobarla contra la versión plana
     public static String descifrarContrasenna(String contrasennaCifrada) throws Exception{
         try{
             //SecretKey 
@@ -59,7 +59,7 @@ public class Cifrado {
     }
 
 
-    //Coincidencia de contraseñas
+    // Compara contraseñas en texto plano contra su equivalente cifrado
     public static boolean comprobarContrasenna(String contrasennaNormal, String contrasennaCifrada){
         try{
             String contrasenna = descifrarContrasenna(contrasennaCifrada);

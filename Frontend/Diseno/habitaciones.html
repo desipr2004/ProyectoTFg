@@ -21,22 +21,19 @@
         </div>
         <nav>
             <ul class="nav-list">
-                <li><a href="index.html" class="nav-link">Inicio</a></li>
-                <li><a href="index.html#hotelsList" class="nav-link">Hoteles</a></li>
-                <li><a href="reserva.html" class="nav-link">Reservas</a></li>
+                <li><a href="inicio.html" class="nav-link">Inicio</a></li>
+                <li><a href="inicio.html#hotelsList" class="nav-link">Hoteles</a></li>
                 <li><a href="usuario.html" class="nav-link">Usuarios</a></li>
             </ul>
         </nav>
-        <div style="display:flex; gap:16px; align-items:center;">
-            <button type="button" class="btn-primary" id="headerLoginBtn" onclick="window.location.href='usuario.html'">Iniciar sesión</button>
-            <button type="button" class="btn-primary" id="headerRegisterBtn" onclick="window.location.href='usuario.html'">Registrarse</button>
+        <div class="header-actions">
             <button type="button" class="btn-secondary" id="headerLogoutBtn">Cerrar sesión</button>
         </div>
     </header>
 
     <main class="rooms-layout">
         <section class="glass rooms-hero">
-            <p class="breadcrumb"><a href="index.html">Inicio</a> / Seleccionar habitación</p>
+            <p class="breadcrumb"><a href="inicio.html">Inicio</a> / Seleccionar habitación</p>
             <h1 class="title-abro" id="roomsTitle">Habitaciones disponibles</h1>
             <p class="subtitle-urbanist" id="roomsSubtitle">Selecciona el hotel desde la pantalla anterior.</p>
             <button type="button" class="btn-secondary" id="roomsBackButton">Volver al hotel</button>
@@ -56,14 +53,14 @@
                     </div>
                     <div class="filter-actions">
                         <button type="button" class="btn-primary" id="roomsSearchButton">Buscar disponibilidad</button>
-                        <button type="button" class="btn-secondary" id="roomsClearDates">Limpiar fechas</button>
+                        <button type="button" class="btn-secondary" id="roomsClearDates">Limpiar</button>
                     </div>
                 </div>
-                <p class="rooms-message" id="roomsMessage">Elige una habitacion para continuar con tu reserva.</p>
+                <p class="rooms-message" id="roomsMessage">Elige una habitacion para continuar.</p>
                 <div class="rooms-grid" id="roomsList"></div>
             </div>
             <aside class="rooms-selection" id="selectionPanel">
-                <h2 class="section-title">Servicios y complementos</h2>
+                <h2 class="section-title">Servicios</h2>
                 <p id="selectionEmptyMessage">Selecciona una habitación para ver los servicios disponibles.</p>
                 <div id="servicesContainer" class="services-list" hidden></div>
                 <div class="selection-summary" id="selectionSummary" hidden>
@@ -71,7 +68,7 @@
                     <p><strong>Total estimado:</strong> <span id="summaryTotal">—</span></p>
                     <p class="summary-note">El importe definitivo se confirmará en el paso siguiente.</p>
                 </div>
-                <button type="button" class="btn-primary" id="continueButton" disabled>Continuar con la reserva</button>
+                <button type="button" class="btn-primary" id="continueButton" disabled>Continuar</button>
             </aside>
         </section>
 

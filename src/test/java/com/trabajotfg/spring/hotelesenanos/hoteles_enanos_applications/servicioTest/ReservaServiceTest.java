@@ -49,6 +49,7 @@ class ReservaServiceTest {
         usuario = new Usuario();
         usuario.setNombre("Cliente");
         usuario.setApellido("Test");
+        //uuid es un identificador unico universal para evitar colisiones en los emails
         usuario.setEmail("cliente." + UUID.randomUUID() + "@mail.com");
         usuario.setContrasenna("1234");
         usuario = repoUsuario.save(usuario);
@@ -73,7 +74,7 @@ class ReservaServiceTest {
     @Test
     void crearReserva_NoPermiteFechasInvertidas() {
         Reserva reserva = construirReserva(LocalDate.of(2025, 1, 10), LocalDate.of(2025, 1, 9), 2, false);
-
+        // Si la fecha de salida es anterior a la de entrada, debe lanzar una excepción
         assertThatThrownBy(() -> reservaService.crearReserva(reserva))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("salida");
@@ -85,7 +86,7 @@ class ReservaServiceTest {
 
         Reserva guardada = reservaService.crearReserva(reserva);
 
-        assertThat(guardada.getPrecioTotal()).isEqualByComparingTo("480.00");
+        assertThat(guardada.getPrecioTotal()).isEqualByComparingTo("350.00");
         assertThat(guardada.getEstadoReserva()).isEqualTo(Reserva.EstadoReserva.PENDIENTE);
     }
 

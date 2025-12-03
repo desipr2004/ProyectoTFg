@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoteles Enanos - Área de usuarios</title>
+    <title>Hoteles Enanos</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Aboreto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="logo.svg">
+    <link rel="icon" href="logo.svg"> <!--Logo de la pagina-->
 </head>
+
+<!--Parte de arriba-->
 <body>
     <header class="glass header">
         <div class="logo" style="display:flex; flex-direction:column; align-items:center; gap:2px; background:none; box-shadow:none; padding:0;">
@@ -19,26 +21,30 @@
             </svg>
             <span style="font-family:'Aboreto',serif; color:#FFF; font-size:12px; line-height:22px; font-weight:bold; letter-spacing:2px;">Hoteles Enanos</span>
         </div>
+<!--Lista de opciones de la parte de arriba de la pagina-->
         <nav>
             <ul class="nav-list">
                 <li><a href="index.html" class="nav-link">Inicio</a></li>
                 <li><a href="habitaciones.html" class="nav-link">Hoteles</a></li>
-                <li><a href="reserva.html" class="nav-link">Reservas</a></li>
                 <li><a href="usuario.html" class="nav-link active">Usuarios</a></li>
             </ul>
         </nav>
-        <div style="display:flex; gap:16px; align-items:center;">
+        <div class="header-actions">
             <button type="button" class="btn-secondary" id="headerLogoutBtn">Cerrar sesión</button>
         </div>
     </header>
 
+
+<!--Primer encabezdo modo cliente-->
     <main class="reservation-layout user-layout">
         <section class="glass reservation-summary">
-            <p class="breadcrumb"><a href="index.html">Inicio</a> / Usuarios</p>
+            <p class="breadcrumb"><a href="inicio.html">Inicio</a> / Usuarios</p>
             <h1 class="title-abro">Historial de Reservas</h1>
-            <p class="subtitle-urbanist">Encuentra las reservas que has hecho.</p>
+            <p class="subtitle-urbanist">Encuentra las reservas.</p>
         </section>
 
+
+<!--Primera tabla, se muestran las reservas de ese cliente-->
         <section class="glass user-card" id="clientePanel" style="display:none;">
             <div class="panel-header">
                 <h2 class="section-title">Reservas del cliente</h2>
@@ -53,6 +59,7 @@
                             <th>Entrada</th>
                             <th>Salida</th>
                             <th>Estado</th>
+                            <th>Motivo cancelacion</th>
                             <th>Personas</th>
                             <th>Acciones</th>
                         </tr>
@@ -62,6 +69,8 @@
             </div>
         </section>
 
+
+<!--Segunda tabla donde se muestran las herramientas de administrador y puedes buscar por id-->
         <section class="glass user-card" id="adminPanel" style="display:none;">
             <h2 class="section-title">Herramientas de administrador</h2>
             <div class="admin-actions">
@@ -75,11 +84,13 @@
             <form class="user-form inline-form" id="buscarCorreoForm">
                 <label for="busquedaCorreo">Buscar por correo</label>
                 <input type="email" id="busquedaCorreo" required placeholder="cliente@correo.com">
-                <button type="submit" class="btn-primary">Buscar</button>
+                <button type="button" id="btnBuscarCorreo" class="btn-primary">Buscar</button>
             </form>
             <p class="form-feedback" id="adminFeedback"></p>
         </section>
 
+
+<!--Tercera tabla donde se muestran los resultados de las busquedas anteriores o el completo-->
         <section class="glass user-card" id="resultadosPanel" style="display:none;">
             <h2 class="section-title">Reservas encontradas</h2>
             <p id="resultadoMensaje">Utiliza las opciones para cargar información.</p>
@@ -93,6 +104,7 @@
                             <th>Entrada</th>
                             <th>Salida</th>
                             <th>Estado</th>
+                            <th>Motivo cancelacion</th>
                         </tr>
                     </thead>
                     <tbody id="tablaReservasBody"></tbody>
@@ -100,6 +112,9 @@
             </div>
         </section>
 
+
+<!--Cuarta tabla donde se muestran los usuarios registrados y las habitaciones-->
+<!--El boton de actualizar sirve por si no han cargado bien las reservas-->
         <section class="glass user-card" id="usuariosPanel" style="display:none;">
             <div class="panel-header">
                 <h2 class="section-title">Usuarios registrados</h2>
@@ -123,6 +138,8 @@
             </div>
         </section>
 
+
+<!--El administrador verá todas las habitaciones, las activas o las desactivadas-->
         <section class="glass user-card" id="habitacionesPanel" style="display:none;">
             <div class="panel-header">
                 <h2 class="section-title">Habitaciones (admin)</h2>
@@ -146,6 +163,8 @@
                 </table>
             </div>
 
+
+<!--Formulario para crear o actualizar una habitacion por parte del administrador-->
             <h3 class="section-title" style="margin-top:20px;">Crear / actualizar habitacion</h3>
             <form class="user-form" id="habitacionForm">
                 <input type="hidden" id="habitacionId">
@@ -168,6 +187,7 @@
                         <label for="habitacionCapacidad">Capacidad</label>
                         <input type="number" id="habitacionCapacidad" min="1" required>
                     </div>
+
                     <div class="form-field">
                         <label for="habitacionTipo">Tipo</label>
                         <select id="habitacionTipo" required>
@@ -177,6 +197,7 @@
                             <option value="FAMILIAR">FAMILIAR</option>
                         </select>
                     </div>
+
                     <div class="form-field">
                         <label for="habitacionEstado">Estado</label>
                         <select id="habitacionEstado" required>
@@ -184,11 +205,13 @@
                             <option value="OCUPADO">OCUPADO</option>
                             <option value="MANTENIMIENTO">MANTENIMIENTO</option>
                         </select>
+
                     </div>
                     <div class="form-field full-row">
-                        <label for="habitacionDescripcion">Descripcion</label>
+                        <label for="habitacionDescripcion">Descripción</label>
                         <input type="text" id="habitacionDescripcion" placeholder="Opcional">
                     </div>
+
                     <div class="form-field checkbox-field">
                         <label class="checkbox-label"><input type="checkbox" id="habitacionWifi"> Wifi</label>
                     </div>
@@ -214,33 +237,54 @@
         </section>
     </main>
 
+
+    <!--Modal sencillo para anotar el motivo de cancelación-->
+    <div class="modal-overlay" id="cancelModal">
+        <div class="modal-card glass">
+            <button type="button" class="modal-close" id="cancelModalClose">&times;</button>
+            <h2 class="section-title">Cancelar reserva</h2>
+            <p>Escribe un motivo breve para guardar la cancelación.</p>
+            <div class="form-field">
+                <label for="cancelModalTextarea">Motivo</label>
+                <textarea id="cancelModalTextarea" rows="4" placeholder="Ej: cambio de planes"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-primary" id="cancelModalConfirm">Confirmar cancelación</button>
+                <button type="button" class="btn-secondary" id="cancelModalCancel">Mantener reserva</button>
+            </div>
+            <p class="form-feedback" id="cancelModalFeedback"></p>
+        </div>
+    </div>
+
+               <!--Modal de registro -->
     <div class="modal-overlay" id="registerModal">
         <div class="modal-card glass">
             <button type="button" class="modal-close" id="closeRegisterModal">&times;</button>
-            <h2 class="section-title">Crear cuenta rápida</h2>
+            <h2 class="section-title">Crear cuenta</h2>
             <form id="registerForm" class="user-form">
                 <label for="registerEmail">Correo</label>
-                <input type="email" id="registerEmail" required placeholder="nuevo@correo.com">
-
+                <input type="email" id="registerEmail" name="registerEmail" autocomplete="off" inputmode="email" autocorrect="off" autocapitalize="none" spellcheck="false" data-form-type="other" data-lpignore="true" required placeholder="nuevo@correo.com">
                 <label for="registerNombre">Nombre</label>
-                <input type="text" id="registerNombre" placeholder="Nombre (opcional)">
-
+                <input type="text" id="registerNombre" placeholder="Nombre">
                 <label for="registerApellido">Apellido</label>
-                <input type="text" id="registerApellido" placeholder="Apellido (opcional)">
-
+                <input type="text" id="registerApellido" placeholder="Apellido">
                 <label for="registerPassword">Contraseña</label>
-                <input type="password" id="registerPassword" required placeholder="Crea una contraseña">
-
+                <input type="password" id="registerPassword" name="registerPassword" autocomplete="new-password" required placeholder="Crea una contraseña">
                 <label for="registerTelefono">Teléfono</label>
                 <input type="tel" id="registerTelefono" placeholder="Teléfono de contacto">
-
                 <button type="submit" class="btn-primary">Registrarse</button>
                 <p class="form-feedback" id="registerFeedback"></p>
             </form>
         </div>
     </div>
 
+
+
     <script src="../TypeScript/session.js"></script>
     <script src="../TypeScript/usuario.js"></script>
+
 </body>
 </html>
+
+
+
