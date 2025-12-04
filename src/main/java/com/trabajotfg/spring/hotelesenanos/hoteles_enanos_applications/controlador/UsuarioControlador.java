@@ -19,10 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
-/**
- * Endpoints administrativos para mantener usuarios: listado, detalle, altas,
- * actualizaciones y borrados lógicos/físicos según convenga.
- */
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/usuarios")
@@ -31,13 +27,13 @@ public class UsuarioControlador {
     @Autowired
     private UsuarioService usuarioService;
 
-    // GET /api/usuarios -> devuelve la lista completa para el panel de admin
+    // GET /api/usuarios: devuelve la lista completa para el panel de admin
     @GetMapping
     public List<Usuario> todosLosUsuarios(){
         return usuarioService.listaUsuarios();
     }
 
-    // GET /api/usuarios/{id} -> busca por ID devolviendo 404 si no se encuentra
+    // GET /api/usuarios/{id}: busca por ID devolviendo 404 si no se encuentra
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> usuariosId(@PathVariable Integer id) {
         Optional<Usuario> usuario = usuarioService.buscarPorID(id);
@@ -47,13 +43,13 @@ public class UsuarioControlador {
         return ResponseEntity.ok(usuario.get());
     }
     
-    // POST /api/usuarios -> crea usuarios desde herramientas internas
+    // POST /api/usuarios: crea usuarios desde herramientas internas
     @PostMapping
     public Usuario crearUsuario(@RequestBody Usuario usuario) throws Exception {
         return usuarioService.crerUsuario(usuario);
     }
     
-    // PUT /api/usuarios/{id} -> actualiza datos básicos o rol
+    // PUT /api/usuarios/{id}: actualiza datos básicos o rol
     @PutMapping("/{id}")
     public Usuario actualizarU(@PathVariable Integer id, @RequestBody Usuario usuario) throws Exception {
         usuario.setId(id);
@@ -61,7 +57,7 @@ public class UsuarioControlador {
         return usuarioService.actualizarUsuario(usuario);
     }
 
-    // DELETE /api/usuarios/{id} -> elimina el registro (en demos se usa para limpiar datos)
+    // DELETE /api/usuarios/{id}: elimina el registro (en demos se usa para limpiar datos)
     @DeleteMapping("/{id}")
     public void eliminarU(@PathVariable Integer id){
         usuarioService.eliminarUsuario(id);

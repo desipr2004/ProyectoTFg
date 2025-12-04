@@ -15,7 +15,7 @@ var mensajeModalCancelacion = null;
 var hotelesAdminCache = [];
 var hotelesAdminMap = {};
 
-// Punto de entrada: configura todos los eventos del panel de usuarios/admin
+//configura todos los eventos del panel de usuarios/admin
 document.addEventListener("DOMContentLoaded", function(){
     // Botones y formularios principales visibles en la vista de usuarios
     var botonVerTodas = document.getElementById("btnTodasReservas");
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function(){
     botonMantenerReserva = document.getElementById("cancelModalCancel");
     mensajeModalCancelacion = document.getElementById("cancelModalFeedback");
 
-
+    // Eventos de los botones y formularios principales
     if(botonVerTodas){
         botonVerTodas.addEventListener("click", function(){
             cargarReservasAdministracion();
@@ -165,12 +165,12 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     }
 
-    // Al finalizar la configuracion restauramos la sesion almacenada y abrimos historial si corresponde
+    // Al finalizar la configuracion restauramos la sesion almacenada y abrimos el historial si corresponde
     restaurarSesionAppPersistida();
     abrirHistorialSiCorresponde();
 });
 
-// Muestra un aviso flotante en el panel de habitaciones del admin
+// Muestra un popup en el panel de habitaciones del admin
 function mostrarPopupHabitacion(mensaje){
     if(!document || !document.body){
         window.alert(mensaje);
@@ -195,7 +195,6 @@ function mostrarPopupHabitacion(mensaje){
 /**Async, es modificador de funciones en JS que trabajara la funcion de form asíncrona , gracias a esto, Js te deja 
  * usar la palabra await que pausa la ejecucion hasta que la promesa se resuelva, como por ejemplo una llamada fetch a una API.
  */
-// Inicia sesión desde el panel lateral reutilizando la API pública
 async function iniciarSesionAppUsuario(){
     var emailInput = document.getElementById("loginEmail");
     var passwordInput = document.getElementById("loginPassword");
@@ -262,8 +261,9 @@ function mostrarPanelesSegunRol(){
         }
         return;
     }
-
+   // Si lo hay, mostramos el panel de cliente o admin según su rol
     var esAdmin = usuarioActual.tipoUsuario === "ADMIN";
+    //Son if else para mostrar u ocultar los paneles
     panelCliente.style.display = esAdmin ? "none" : "block";
     resultadosPanel.style.display = esAdmin ? "block" : "none";
     var clienteMensaje = document.getElementById("clienteMensaje");
@@ -299,8 +299,8 @@ function mostrarPanelesSegunRol(){
     }
 }
 
-// Recupera las reservas del usuario autenticado y las pone en la tabla del cliente
-// Obtiene el historial del cliente autenticado y lo pinta en la tabla
+// Recupera las reservas del usuario registrado y las pone en la tabla del cliente
+// Obtiene el historial del cliente registrado y lo pone en la tabla
 async function cargarReservasDelCliente(){
     var mensaje = document.getElementById("clienteMensaje");
     var cuerpo = document.getElementById("clienteReservasBody");
@@ -357,8 +357,8 @@ async function cargarReservasDelCliente(){
     }
 }
 
-// Carga todas las reservas disponibles para administradores
-// Lista todas las reservas para el panel administrativo
+// Carga todas las reservas disponibles para los admin
+// Lista todas las reservas para los admins
 async function cargarReservasAdministracion(){
     var feedback = document.getElementById("adminFeedback");
     feedback.textContent = "";
@@ -376,7 +376,7 @@ async function cargarReservasAdministracion(){
     }
 }
 
-// Lista todos los usuarios para administradores
+// Lista todos los usuarios para los admin
 // Descarga todos los usuarios para mostrarlos en la tabla de admin
 async function cargarUsuariosRegistrados(){
     var mensaje = document.getElementById("usuariosMensaje");
@@ -407,7 +407,7 @@ async function cargarUsuariosRegistrados(){
     }
 }
 
-// CRUD de habitaciones para administradores
+// CRUD de habitaciones para los admin
 // Carga el catálogo de habitaciones para la sección CRUD del admin
 async function cargarHabitacionesAdmin(){
     var mensaje = document.getElementById("habitacionesMensaje");
@@ -438,7 +438,7 @@ async function cargarHabitacionesAdmin(){
     }
 }
 
-// Alimenta el combo de hoteles disponible en el formulario de habitaciones
+// Carga la lista de hoteles para el formulario de habitaciones del admin 
 async function cargarHotelesAdmin(){
     var selectHotel = document.getElementById("habitacionHotelId");
     if(!selectHotel){
@@ -479,6 +479,7 @@ async function cargarHotelesAdmin(){
                 var optPendiente = document.createElement("option");
                 optPendiente.value = seleccionado;
                 var hotelPendiente = hotelesAdminMap[seleccionado];
+                //si no esta en el map le ponemos un nombre generico
                 optPendiente.textContent = hotelPendiente && hotelPendiente.nombre ? hotelPendiente.nombre : ("Hotel " + seleccionado);
                 selectHotel.appendChild(optPendiente);
             }
@@ -488,7 +489,7 @@ async function cargarHotelesAdmin(){
         // Silenciamos el error para no romper el flujo de admin
     }
 }
-
+// PINTAMOS la tabla de las habitaicones 
 function pintarTablaHabitaciones(habitaciones){
     var cuerpo = document.getElementById("tablaHabitacionesBody");
     if(!cuerpo){
@@ -666,7 +667,7 @@ async function guardarHabitacionAdmin(){
         }
         return;
     }
-
+//el payload es un objeto que contiene  los datos de la habitacion que se van a enviar al servidor
     var payload = {
         numeroHabitacion: document.getElementById("habitacionNumero").value,
         capacidad: parseInt(document.getElementById("habitacionCapacidad").value, 10) || 0,
@@ -690,6 +691,7 @@ async function guardarHabitacionAdmin(){
     }
 
     try{
+        // Realizamos la llamada a la API para guardar o actualizar la habitación
         var resp = await fetch(url, {
             method: method,
             headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -804,6 +806,7 @@ async function buscarReservasPorCorreo(){
     }
 
     try{
+        //LLama a la API para buscar por email
         var respuesta = await fetch(URL_API + "/reservas/por-email?email=" + encodeURIComponent(correo));
         if(!respuesta.ok){
             feedback.textContent = "No se encontraron reservas para " + correo + ".";
@@ -823,7 +826,7 @@ async function buscarReservasPorCorreo(){
         feedback.textContent = "Error al realizar la búsqueda.";
     }
 }
-// Pinta la tabla de reservas en el panel de administración
+// Pinta la tabla de reservas en el panel de admin
 function pintarTablaReservas(reservas, mensaje){
     var cuerpo = document.getElementById("tablaReservasBody");
     var texto = document.getElementById("resultadoMensaje");

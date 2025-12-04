@@ -42,9 +42,9 @@ public class Usuario {
 
 
    //Relacion con las reservas(Un usuario puede tener muchas reservas) 
-   //Relacion mappeada por el campo user de la clase Reserva 
-   //cascade.all expade todas las operaciones del Usuario a sus Reservas 
+   //cascade.all expande todas las operaciones del Usuario a sus Reservas 
    //FetchType: carga las reservas solo cuando sea necesario
+   //jsonmanagedrefernce lo que hace es gestinar la serializacion evitando referencias de manera circular
     @JsonManagedReference("usuario-reservas")
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reserva> reservas;

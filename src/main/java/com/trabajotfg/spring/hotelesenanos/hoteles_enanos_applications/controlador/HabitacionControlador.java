@@ -16,15 +16,12 @@ import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.servicio.
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.servicio.HotelService;
 
 
-/**
- * API de habitaciones: CRUD, filtrado por hotel y consulta de disponibilidad.
- * El frontend la usa tanto para mostrar catálogos como para administrar habitaciones.
- */
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/habitacion")
 public class HabitacionControlador {
 
+    //esto sirve para que funcione bien con los clientes que usan UTF-8
     private static final String JSON_UTF8_VALUE = "application/json;charset=UTF-8";
     
     @Autowired
@@ -33,13 +30,13 @@ public class HabitacionControlador {
     @Autowired
     private HotelService hotelService;
 
-    // GET /api/habitacion -> listado completo
+    // GET /api/habitacion: listado completo
     @GetMapping
     public List<Habitacion> listarTodasLasHabitaciones() {
         return habitacionService.listarHabitaciones();
     }
     
-    // GET /api/habitacion/{id} -> detalle puntual o 404 si no existe
+    // GET /api/habitacion/{id}: Buscar por id y devuelve 404 si no existe
     @GetMapping("/{id}")
     public ResponseEntity<Habitacion> habitacionPorId(@PathVariable Integer id) {
         Optional<Habitacion> habitacion = habitacionService.buscarPorId(id);
@@ -49,32 +46,32 @@ public class HabitacionControlador {
         return ResponseEntity.ok(habitacion.get());
     }
     
-    // POST /api/habitacion -> crea habitaciones nuevas
+    // POST /api/habitacion: crea habitaciones nuevas
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, JSON_UTF8_VALUE })
     public Habitacion crearHabitacion(@RequestBody Habitacion habitacion) {
         return habitacionService.crearActualizarHabitacion(habitacion);
     }
     
-    // PUT /api/habitacion/{id} -> actualiza los campos de una habitación existente
+    // PUT /api/habitacion/{id}: actualiza los campos de una habitación existente por id
     @PutMapping(value = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE, JSON_UTF8_VALUE })
     public Habitacion actualizarHabitacion(@PathVariable Integer id, @RequestBody Habitacion habitacion) {
         habitacion.setId(id);
         return habitacionService.crearActualizarHabitacion(habitacion);
     }
 
-    // DELETE /api/habitacion/{id} -> elimina físicamente una habitación
+    // DELETE /api/habitacion/{id}: elimina una habitación
     @DeleteMapping("/{id}")
     public void eliminarHabitacion(@PathVariable Integer id){
         habitacionService.eliminarHabitacion(id);
     }
 
-    // GET /api/habitacion/activo -> devuelve sólo habitaciones activas
+    // GET /api/habitacion/activo: devuelve sólo las habitaciones que estan  activas
     @GetMapping("/activo")
     public List<Habitacion> listarHabitacionesActivas(){
         return habitacionService.habitacionActivo();
     }
 
-    // GET /api/habitacion/hotel/{hotelId}/disponibles -> calcula disponibilidad según rango de fechas
+    // GET /api/habitacion/hotel/{hotelId}/disponibles: calcula disponibilidad según el rango de fechas
     @GetMapping("/hotel/{hotelId}/disponibles")
     public ResponseEntity<List<Habitacion>> habitacionesDisponiblesPorHotel(
             @PathVariable Integer hotelId,

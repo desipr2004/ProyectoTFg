@@ -1,5 +1,5 @@
 (function () {
-    // Página de catálogo de habitaciones: lista habitaciones del hotel y permite elegir servicios
+    // lista habitaciones del hotel y permite elegir servicios
     // Son datos obtenidos de la URL de la pagina actual
     var params = new URLSearchParams(window.location.search);
     var idHotel = params.get('idHotel');
@@ -30,7 +30,7 @@
         return;
     }
     tituloHabitaciones.textContent = 'Habitaciones disponibles - ' + nombreHotel;
-    subtituloHabitaciones.textContent = 'Selecciona una habitacion en ' + nombreHotel + ' para configurar tu reserva.';
+    subtituloHabitaciones.textContent = 'Selecciona una habitacion en ' + nombreHotel + ' para hacer tu reserva.';
 
     botonVolver.addEventListener('click', function () {
         if (urlRetorno) {
@@ -47,7 +47,7 @@
     var URL_HABITACIONES_BASE = idHotel ? API_HOST + '/api/habitacion/hotel/' + idHotel + '/disponibles' : null;
     var URL_HOTEL = idHotel ? API_HOST + '/api/hotel/' + idHotel : null;
 
-    // Estado en memoria para las habitaciones y filtros
+    // Estado para las habitaciones y filtros
     var habitacionesDisponibles = [];
     var habitacionElegida = null;
     var serviciosElegidos = [];
@@ -61,7 +61,7 @@
         avisoHabitaciones.textContent = message;
         avisoHabitaciones.className = 'form-feedback ' + (type || 'info');
     }
-    // Informa al usuario que los servicios adicionales son opcionales
+    // Toast que informa al usuario que los servicios adicionales son opcionales
     function mostrarAvisoServiciosOpcionales() {
         if (!document.body) {
             return;
@@ -72,7 +72,7 @@
             avisoServiciosToast.setAttribute('role', 'status');
             document.body.appendChild(avisoServiciosToast);
         }
-        avisoServiciosToast.textContent = 'Los servicios adicionales son opcionales. Selecciona solo aquellos que necesites.';
+        avisoServiciosToast.textContent = 'Los servicios adicionales no son obligatorios. Selecciona solo aquellos que llamen tu atencion.';
         avisoServiciosToast.classList.add('show');
         window.clearTimeout(avisoServiciosTimeout);
         avisoServiciosTimeout = window.setTimeout(function () {
@@ -210,7 +210,7 @@
         ];
 
         contenedorServicios.innerHTML = '';
-        // Genera las opciones del servicio ofrecido
+        // Genera las opciones del servicio de forma dinamica
         for (var i = 0; i < services.length; i++) {
             var service = services[i];
             var label = document.createElement('label');
@@ -258,11 +258,11 @@
         listaHabitaciones.innerHTML = '';
 
         if (!habitacionesDisponibles.length) {
-            mensajeHabitaciones.textContent = 'No hay habitaciones disponibles ahora mismo.';
+            mensajeHabitaciones.textContent = 'Por ahora, no hay habitaciones disponibles.';
             return;
         }
 
-        mensajeHabitaciones.textContent = 'Elige la habitacion que prefieras.';
+        mensajeHabitaciones.textContent = 'Elige la habitacion que mas te guste.';
 
         for (var i = 0; i < habitacionesDisponibles.length; i++) {
             var room = habitacionesDisponibles[i];
@@ -330,7 +330,7 @@
         return url.toString();
     }
 
-    // Recupera informacion basica del hotel para personalizar la oferta de servicios
+    // Recupera informacion basica del hotel para poder mostrar los servicios
     function cargarHotel() {
         if (!URL_HOTEL) {
             return;
@@ -355,7 +355,7 @@
     function cargarHabitaciones() {
         var endpoint = construirUrlHabitaciones();
         if (!endpoint) {
-            mensajeHabitaciones.textContent = 'No se indico el hotel. Vuelve a la pantalla anterior.';
+            mensajeHabitaciones.textContent = 'No has indicado el hotel. Vuelve a la pantalla anterior.';
             botonContinuar.disabled = true;
             return;
         }
@@ -378,7 +378,7 @@
                 if (!habitacionesDisponibles.length) {
                     mensajeHabitaciones.textContent = fechaEntradaSeleccionada && fechaSalidaSeleccionada
                         ? 'No hay habitaciones disponibles durante esas fechas.'
-                        : 'No hay habitaciones disponibles para este hotel.';
+                        : 'De momento no hay  habitaciones disponibles para este hotel.';
                     habitacionElegida = null;
                     serviciosElegidos = [];
                     pintarServicios();

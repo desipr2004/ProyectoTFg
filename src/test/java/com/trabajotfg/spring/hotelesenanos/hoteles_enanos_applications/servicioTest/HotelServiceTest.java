@@ -20,7 +20,7 @@ class HotelServiceTest {
 
     @Mock
     private RepoHotel repoHotel;
-//injectmocks crea una instancia de la clase y le inyecta los mocks anotados con @Mock
+    //injectmocks crea una instancia de la clase y le inyecta los mocks anotados con @Mock
     @InjectMocks
     private HotelService hotelService;
 

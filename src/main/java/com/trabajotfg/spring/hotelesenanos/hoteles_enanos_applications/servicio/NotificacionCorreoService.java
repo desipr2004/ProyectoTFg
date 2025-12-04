@@ -20,12 +20,13 @@ import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Re
 
 @ConditionalOnClass(name = "org.springframework.mail.MailSender")
 @Service
-// Servicio auxiliar para enviar correos de confirmación cuando hay infraestructura SMTP disponible
 public class NotificacionCorreoService {
+    // El Logger sirve para dejar mensajes en el log del sistema (consola de navegador o fichero)
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificacionCorreoService.class);
     private static final Locale LOCALE_ES = new Locale("es", "ES");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    //El ObjectProvider permite inyectar el MailSender solo si está disponible en Spring
     private final ObjectProvider<MailSender> mailSenderProvider;
     private final boolean correoHabilitado;
     private final String remitente;

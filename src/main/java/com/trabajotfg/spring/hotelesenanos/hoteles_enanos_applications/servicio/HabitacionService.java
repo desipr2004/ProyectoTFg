@@ -2,6 +2,7 @@ package com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.servicio
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +15,6 @@ import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Re
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoHabitacion;
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoReserva;
 
-// Servicio encargado de la lógica de habitaciones (CRUD, filtros y disponibilidad)
 @Service
 public class HabitacionService {
     
@@ -46,17 +46,17 @@ public class HabitacionService {
     List<Habitacion> findByEstadoAndHotel(Habitacion.EstadoHabitacion estado, Hotel hotel);
      */
        // List<Habitacion> findByHotel(Hotel hotel);
-    // Devuelve todas las habitaciones sin filtros
+    // Devuelve todas las habitaciones 
     public List<Habitacion> listarHabitaciones(){
         return habitacionRepo.findAll();
     }
 
-    // Recupera una habitación concreta
+    //Muestra una habitación por el id
     public Optional<Habitacion> buscarPorId(Integer id){
         return habitacionRepo.findById(id);
     }
 
-    // Guarda la información de la habitación (alta o modificación)
+    // Crea o actualiza una habitacion
     public Habitacion crearActualizarHabitacion(Habitacion habitacion){
         return habitacionRepo.save(habitacion);
     }
@@ -66,45 +66,51 @@ public class HabitacionService {
         habitacionRepo.deleteById(id);
     }
 
-    // Devuelve solo habitaciones activas
+    // Devuelve solo las  habitaciones que estan activas
     public List<Habitacion> habitacionActivo(){
         return habitacionRepo.findByActivaTrue();
     }
 
-    // Habitaciones pertenecientes a un hotel concreto
+    // Lista las habitaciones de un hotel en concreto
     public List<Habitacion> habitacionPorHotel(Hotel hotel){
         return habitacionRepo.findByHotel(hotel);
     }
-
+    //Lista las habitaciones segun el estado de esta 
     public List<Habitacion> buscarPorEstado(Habitacion.EstadoHabitacion estado){
         return habitacionRepo.findByEstado(estado);
     }
-
+    //Lista las habitaciones segun el tipo de habitacion
     public List<Habitacion> buscarTipoHabitacion(Habitacion.TipoHabitacion tipoHabitacion){
         return habitacionRepo.findByTipoHabitacion(tipoHabitacion);
     }
-
+    //Lista las habitaciones segun la capacidad de esta
     public List<Habitacion> buscarPorCapacidad (Integer capacidad){
         return habitacionRepo.findByCapacidad(capacidad);
     }
-
+    //Lista las habitaciones segun el estado de la habitacion y el hotel 
     public List<Habitacion> buscarPorEstadoYHotel(Habitacion.EstadoHabitacion estado, Hotel hotel){
         return habitacionRepo.findByEstadoAndHotel(estado, hotel);
     }
 
     /**
-     * Devuelve habitaciones activas y en estado DISPONIBLE para un hotel que no tengan
+     * Devuelve las habitaciones activas y en estado DISPONIBLE para un hotel que no tenga
      * reservas que se superpongan con el rango indicado. Si las fechas son nulas o invalidas,
      * se devuelve el listado simple de DISPONIBLE.
      */
-    // Calcula habitaciones libres comprobando solapes de reservas confirmadas/pendientes
+
     public List<Habitacion> buscarDisponiblesPorHotelYRango(Hotel hotel, LocalDate fechaEntrada, LocalDate fechaSalida) {
         if (hotel == null) {
-            return List.of();
+            return List.of(); // devuelve una lista vacia si no hay hotel
         }
 
         List<Habitacion> base = habitacionRepo.findByEstadoAndHotel(Habitacion.EstadoHabitacion.DISPONIBLE, hotel);
-        base.removeIf(h -> !Boolean.TRUE.equals(h.getActiva()));
+        Iterator<Habitacion> iterator = base.iterator(); // el iterator recorre la lista base y puede eliminar elementos sin causar errores
+        while (iterator.hasNext()) {
+            Habitacion habitacionActual = iterator.next();
+            if (!Boolean.TRUE.equals(habitacionActual.getActiva())) {
+                iterator.remove();
+            }
+        }
 
         if (fechaEntrada == null || fechaSalida == null || !fechaEntrada.isBefore(fechaSalida)) {
             return base;
@@ -112,7 +118,7 @@ public class HabitacionService {
 
         List<Habitacion> libres = new ArrayList<>();
         for (Habitacion habitacion : base) {
-            List<Reserva> solapes = reservaRepo.findReservasSuperpuestas(habitacion, fechaEntrada, fechaSalida);
+            List<Reserva> solapes = reservaRepo.findReservasSuperpuestas(habitacion, fechaEntrada, fechaSalida);// busca las reservas que se solapen en el rango indicado
             boolean ocupada = false;
             for (Reserva reserva : solapes) {
                 Reserva.EstadoReserva estado = reserva.getEstadoReserva();

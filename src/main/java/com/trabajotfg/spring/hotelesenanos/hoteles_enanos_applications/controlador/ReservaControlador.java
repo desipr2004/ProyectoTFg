@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-/**
- * Controlador REST para reservas. Ofrece listados, filtros por usuario/correo,
- * creación, actualización, cancelación y eliminación.
- */
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/reservas")
@@ -35,26 +32,26 @@ public class ReservaControlador {
     @Autowired
     private ReservaService reservaService;
 
-    // GET /api/reservas -> devuelve todas las reservas para administración
+    // GET /api/reservas: devuelve todas las reservas para los admin
     @GetMapping
     public List<Reserva> reservasPorId() {
         return reservaService.listarReservas();
     }
 
-    // GET /api/reservas/por-usuario/{usuarioId} -> historial de un usuario concreto
+    // GET /api/reservas/por-usuario/{usuarioId}: recibes todas las reservas de un usuario
     @GetMapping("/por-usuario/{usuarioId}")
     public List<Reserva> reservasPorUsuario(@PathVariable Integer usuarioId){
         return reservaService.buscarReservasPorUsuarioId(usuarioId);
     }
 
-    // GET /api/reservas/por-email?correo=... -> filtro adicional por correo
+    // GET /api/reservas/por-email?correo=elquesea@gmail.com: filtro para buscar por correo
     @GetMapping("/por-email")
     public List<Reserva> reservasPorCorreo(@RequestParam("email") String email){
         return reservaService.buscarReservasPorCorreo(email);
     }
     
 
-    // GET /api/reservas/{id} -> detalle puntual
+    // GET /api/reservas/{id}: son detalles de una reserva en particular
     @GetMapping("/{id}")
     public ResponseEntity<Reserva> obtenerReservaId(@PathVariable  Integer id) {
         Optional<Reserva> reserva  = reservaService.buscarPorId(id);
@@ -65,13 +62,13 @@ public class ReservaControlador {
     }
 
    
-    // POST /api/reservas -> crea una reserva calculando precio y validando fechas
+    // POST /api/reservas: crea una reserva nueva
     @PostMapping
     public Reserva crearReserva(@RequestBody Reserva reserva) {
         return reservaService.crearReserva(reserva);
     }
     
-    // PUT /api/reservas/{id} -> actualiza fechas o estado de una reserva existente
+    // PUT /api/reservas/{id}: actualiza fechas o estado de una reserva que ya existe
     @PutMapping("/{id}")
     public Reserva actualizarReserva(@PathVariable Integer id, @RequestBody Reserva reserva) {
        reserva.setId(id);
@@ -79,14 +76,14 @@ public class ReservaControlador {
         return reservaService.actualizarReserva(reserva);
     }
     
-    // PUT /api/reservas/{id}/cancelar -> atajo para cancelar con motivo
+    // PUT /api/reservas/{id}/cancelar: cancelar una reserva existente con un motivo
     @PutMapping("/{id}/cancelar")
     public Reserva cancelarReserva(@PathVariable Integer id, @RequestBody CancelacionReservaRequest request) {
         String motivo = request != null ? request.getMotivo() : null;
         return reservaService.cancelarReserva(id, motivo);
     }
 
-    // DELETE /api/reservas/{id} -> elimina definitivo (se usa para depurar datos de demo)
+    // DELETE /api/reservas/{id}: elimina definitivamente una reserva
     @DeleteMapping("/{id}")
     public void eliminarReserva(@PathVariable Integer id){
         reservaService.eliminarReserva(id);

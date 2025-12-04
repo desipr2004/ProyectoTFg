@@ -7,10 +7,7 @@ import java.util.Optional;
 
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoHotel;
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.modelo.Hotel;
-/**
- * Lógica de negocio relacionada con hoteles.
- * Aquí solo se delega en el repositorio, pero centraliza futuras reglas.
- */
+
 @Service
 public class HotelService {
     
@@ -18,17 +15,17 @@ public class HotelService {
     @Autowired
     private RepoHotel hotelRepo;
 
-    // Devuelve todo el catálogo de hoteles
+    // Devuelve todos los hoteles
     public List<Hotel> listarHoteles(){
         return hotelRepo.findAll();
     }
 
-    // Busca un hotel puntual por ID
+    // Busca un hotel  por su id
     public Optional<Hotel> buscarHotelId(Integer id){
         return hotelRepo.findById(id);
     }
 
-    // Crea o actualiza un hotel (Spring determina la operación)
+    // Crea o actualiza un hotel spring ya se encarga de ello
     public Hotel crearActualizarHotel(Hotel hotel){
         return hotelRepo.save(hotel);
     }
@@ -38,7 +35,7 @@ public class HotelService {
         return hotelRepo.findByActivoTrue();
     }
 
-    // Filtrado por ciudad (lo usa el frontend para búsquedas)
+    // Filtrado por ciudad exacta
     public List<Hotel> buscarPorCiudad(String ciudad){
         return hotelRepo.findByCiudad(ciudad);
     }
@@ -48,17 +45,17 @@ public class HotelService {
         return hotelRepo.findByNombreIgnoreCase(nombre);
     }
 
-    // Variante que devuelve solo activos
+    // Variante que devuelve solo los hoteles activos
     public List<Hotel> buscarNombreActivoo(String nombre){
         return hotelRepo.findByNombreAndActivoTrue(nombre);
     }
 
-    // List<Hotel> findByEstrellas(Integer estrellas);
+    // Lista los hoteles por estrellas
     public List<Hotel> buscarPorEstrellas(Integer estrellas){
         return hotelRepo.findByEstrellas(estrellas);
     }
 
-    //    boolean existsByNombreAndCiudad(String nombre, String ciudad);
+    //  Comprueba si ya existe un hotel con el mismo nombre en la misma ciudad
     public boolean existeHotelNombreCiudad(String nombre, String ciudad){
         return hotelRepo.existsByNombreAndCiudad(nombre, ciudad);
     }

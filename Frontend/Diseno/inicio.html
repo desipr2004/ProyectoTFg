@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoteles Enanos - Reserva tu estancia</title>
+    <title>Hoteles Enanos - Reserva tu futura aventura</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Aboreto:wght@400;700&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
     <main>
         <section class="hero glass">
             <h1 class="title-abro">Encuentra tu hotel ideal</h1>
-            <p class="subtitle-urbanist">Haz tu reserva para una mejor experiencia.</p>
+            <p class="subtitle-urbanist">Vive una experiencia con nosotros. Reserva !!</p>
             <form class="search-form glass" id="hotelSearchForm" novalidate>
                 <input type="text" placeholder="Destino o nombre del hotel" class="input-search" id="searchTerm" list="hotelsSuggestions" autocomplete="off">
                 <datalist id="hotelsSuggestions"></datalist>
@@ -116,6 +116,7 @@
                     .normalize('NFD')
                     .replace(/[\u0300-\u036f]/g, '');
             };
+            // Actualiza las sugerencias del datalist según lo que se escribe en el input
 
             const updateSuggestions = (term) => {
                 if (!suggestionsList) {
@@ -186,7 +187,7 @@
                     amenities.push('Acepta mascotas');
                 }
 
-                return amenities.length ? amenities.join(' · ') : 'Sin información de servicios';
+                return amenities.length ? amenities.join(' · ') : 'No hay información de los servicios';
             };
 
             const buildCapacityTitle = (hotel) => {
@@ -324,7 +325,7 @@
             //pone una lista de hoteles en pantalla y en caso de que no haya muestra mensajes
             const renderHotels = (list) => {
                 if (!Array.isArray(list) || !list.length) {
-                    showMessage('No se encontraron hoteles', 'Prueba con otros criterios de búsqueda.');
+                    showMessage('No se han encontrado  hoteles');
                     return;
                 }
 
@@ -372,7 +373,6 @@
                     updateSuggestions(searchTermInput?.value || '');
                     return hotelsState.all;
                 } catch (error) {
-                    console.error('No se pudieron obtener los hoteles', error);
                     showMessage('Ups, algo salió mal');
                     hotelsState.all = [];
                     return [];

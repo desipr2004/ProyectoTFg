@@ -1,10 +1,10 @@
 (function(){
-    // Utilidad compartida para guardar/consultar la sesion del usuario en localStorage
+    // Guarda la clave utilizada en localStorage(en el navegador) 
     var CLAVE_SESION = "usuarioSesion";
     // Marcador usado para recordar que el historial debe abrirse al volver a usuario.html
     var CLAVE_HISTORIAL = "abrirHistorial";
 
-    // Wrapper para no repetir el chequeo de DOMContentLoaded
+    // Ejecuta el callback cuando el DOM esté listo
     function ejecutarCuandoListo(callback){
         if(document.readyState === "loading"){
             document.addEventListener("DOMContentLoaded", callback);
@@ -26,7 +26,7 @@
         }
     }
 
-    // Persiste la sesión en localStorage y notifica el cambio al resto de la app
+    // Continua la sesión en localStorage y notifica el cambio al resto de la app
     function guardarSesion(usuario){
         if(!usuario){
             return;
@@ -39,6 +39,7 @@
         notificarCambioSesion(usuario);
     }
 
+    //Limpia la sesion y muestra el estado sin sesion 
     function limpiarSesion(){
         try{
             localStorage.removeItem(CLAVE_SESION);

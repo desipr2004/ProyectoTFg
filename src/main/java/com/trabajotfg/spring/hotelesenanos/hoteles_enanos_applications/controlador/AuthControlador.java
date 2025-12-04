@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-/**
- * Controlador encargado de las operaciones públicas de autenticación.
- * Registra cuentas y valida credenciales para que el frontend gestione sesiones.
- */
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/auth")
@@ -27,7 +23,7 @@ public class AuthControlador {
     @Autowired
     private UsuarioService usuarioService;
 
-    // Post /api/auth/registro -> crea un usuario nuevo si no existe el correo
+    // Post /api/auth/registro: crea un usuario nuevo si no existe el correo
     @PostMapping("/registro")
     public Map<String, Object> registro(@RequestBody Usuario usuario) throws Exception {
         Map<String, Object> res =new HashMap<>();        
@@ -52,7 +48,7 @@ public class AuthControlador {
     
 }
 
-    // Post /api/auth/login -> valida credenciales y devuelve al usuario autenticado
+    // Post /api/auth/login: valida credenciales y devuelve al usuario autenticado
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> login, jakarta.servlet.http.HttpSession session) {
     Map<String, Object> res = new HashMap<>();

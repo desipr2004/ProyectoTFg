@@ -77,7 +77,7 @@
                 const registerForm = document.getElementById("landingRegisterForm");
                 const loginBtn = document.getElementById("landingLoginBtn");
                 const registerBtn = document.getElementById("landingRegisterBtn");
-                // Muestra el formulario correspondiente y resalta el botón activo
+                // Muestra el formulario que corresponde y resalta el botón activo
                 if(loginForm){ loginForm.style.display = mode === "login" ? "block" : "none"; }
                 if(registerForm){ registerForm.style.display = mode === "register" ? "block" : "none"; }
                 if(loginBtn){ loginBtn.classList.toggle("active", mode === "login"); }
@@ -156,7 +156,7 @@
                     feedback.className = "landing-feedback error";
                 }
             }
-
+// Inicializa la página
             document.addEventListener("DOMContentLoaded", function(){
                 if(SesionApp && SesionApp.obtenerSesion && SesionApp.obtenerSesion()){
                     window.location.href = "inicio.html";

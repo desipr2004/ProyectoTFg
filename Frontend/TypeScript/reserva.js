@@ -56,7 +56,7 @@
     var inputNumeroPersonas = document.getElementById('numPersonas');
     var ayudaNumeroPersonas = document.getElementById('numPersonasHelp');
 
-    // Catálogo de servicios para mostrar nombres amigables
+    // Catálogo de servicios para mostrar nombres 
     var ETIQUETAS_SERVICIO = {
         TODO_INCLUIDO: 'Todo incluido',
         DESAYUNO_EXTRA: 'Desayuno gourmet',
@@ -174,7 +174,7 @@
         mostrarServiciosSeleccionados();
     }
 
-    // Devuelve las noches calculadas a partir de las fechas del formulario
+    // Devuelve el total de las noches a partir de las fechas seleccionadas
     function calcularTotalNoches() {
         var entrada = formularioReserva.fechaEntrada.value;
         var salida = formularioReserva.fechaSalida.value;
@@ -187,7 +187,7 @@
         return diff > 0 ? diff : 1;
     }
 
-    // Normaliza el precio de la habitación asegurando que sea un número válido
+    // segun el numero de la habitacion obtenemos el precio por noche
     function obtenerPrecioPorNoche() {
         var precio = habitacionElegida ? habitacionElegida.precioPorNoche : null;
         if (precio === undefined || precio === null) {
@@ -250,6 +250,7 @@
             inputNumeroPersonas.value = nuevoValor;
             inputNumeroPersonas.placeholder = "Capacidad máxima " + capacidad;
             if (ayudaNumeroPersonas) {
+                //si es una persona no se le añade la s 
                 ayudaNumeroPersonas.textContent = "Capacidad máxima: " + capacidad + " persona" + (capacidad === 1 ? "" : "s");
             }
         } else {
@@ -269,7 +270,7 @@
         actualizarTotalesReserva();
     }
 
-    // Calcula el importe final y actualiza los textos/resumen antes de enviar la reserva
+    // Calcula el coste final y actualiza los textos antes de enviar la reserva
     function actualizarTotalesReserva() {
         if (!habitacionElegida) {
             inputPrecioTotal.value = '';
@@ -299,7 +300,7 @@
         inputPrecioTotal.value = total.toFixed(2);
     }
 
-    // Construye la URL de detalle de habitación con parámetro anti-cache opcional
+    // Construye la URL para obtener los datos de la habitación desde la API
     function construirUrlHabitacion(forceRefresh) {
         if (!URL_HABITACION_BASE) {
             return null;
@@ -374,7 +375,7 @@
         actualizarTotalesReserva();
     });
 
-// Escuchamos cambios para recalcular precios y controlar navegacion
+// Escuchamos cambios para recalcular precios
     formularioReserva.numPersonas.addEventListener('input', manejarCambioNumeroPersonas);
     formularioReserva.fechaEntrada.addEventListener('change', actualizarTotalesReserva);
     formularioReserva.fechaSalida.addEventListener('change', actualizarTotalesReserva);
@@ -386,7 +387,7 @@
             window.location.href = 'inicio.html';
         }
     });
-// Navegacion para cambiar la habitacion seleccionada
+// cambia la habitacion seleccionada
     if (botonCambiarHabitacion) {
         botonCambiarHabitacion.addEventListener('click', function () {
             var roomsUrl = new URL('habitaciones.html', window.location.href);

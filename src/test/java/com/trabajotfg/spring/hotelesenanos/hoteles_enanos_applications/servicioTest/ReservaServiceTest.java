@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,13 @@ class ReservaServiceTest {
     void crearReserva_NoPermiteFechasInvertidas() {
         Reserva reserva = construirReserva(LocalDate.of(2025, 1, 10), LocalDate.of(2025, 1, 9), 2, false);
         // Si la fecha de salida es anterior a la de entrada, debe lanzar una excepción
-        assertThatThrownBy(() -> reservaService.crearReserva(reserva))
+        ThrowingCallable crearReservaCallable = new ThrowingCallable() {
+            @Override
+            public void call() throws Throwable {
+                reservaService.crearReserva(reserva);
+            }
+        };
+        assertThatThrownBy(crearReservaCallable)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("salida");
     }

@@ -17,9 +17,13 @@ import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositor
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoReserva;
 import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.repositorio.RepoUsuario;
 
-// Servicio que controla el ciclo completo de las reservas (validaciones, cálculos y notificaciones)
 @Service
 public class ReservaService {
+    /* 
+    por persona son 60 euros mas
+    por dia elegido y todo incluido son 10 euros 
+
+    */ 
     private static final BigDecimal RECARGO_POR_PERSONA = new BigDecimal("60.00");
     private static final BigDecimal SUPLEMENTO_POR_DIA = new BigDecimal("10.00");
     private static final BigDecimal COSTE_TODO_INCLUIDO = new BigDecimal("10.00");
@@ -36,12 +40,12 @@ public class ReservaService {
     @Autowired(required = false)
     private NotificacionCorreoService notificacionCorreoService;
 
-    // Listado completo para panel administrativo
+    // Listado completo para los administradores
     public List<Reserva> listarReservas(){
         return reservaRepo.findAll();
     }
 
-    // Filtro por identificador de usuario
+    // Filtro por id de usuario
     public List<Reserva> buscarReservasPorUsuarioId(int usuarioId){
         Optional<Usuario> usuario = usuarioRepo.findById(usuarioId);
         if(usuario.isPresent()){
@@ -50,7 +54,7 @@ public class ReservaService {
         return Collections.emptyList();
     }
 
-    // Filtro alternativo basado en el correo
+    // Filtro para buscar las reservas por correo electrónico
     public List<Reserva> buscarReservasPorCorreo(String email){
         if(email == null){
             return Collections.emptyList();
@@ -63,12 +67,12 @@ public class ReservaService {
         return reservaRepo.findByEmailUsuario(email);
     }
 
-    // Recupera una reserva puntual si existe
+    //Buscar reserva por id
     public Optional<Reserva> buscarPorId(Integer id){
         return reservaRepo.findById(id);
     }
 
-    // Registra una reserva nueva calculando su precio y notificando al cliente
+    // Registra una reserva nueva calculando su precio y lo notifica al cliente
     public Reserva crearReserva(Reserva reserva){
         reserva.setId(0);
         prepararReserva(reserva);
@@ -77,17 +81,20 @@ public class ReservaService {
         return reservaGuardada;
     }
 
-    // Persiste los cambios aplicando las mismas reglas de negocio que en la creación
+    // Actualiza una reserva existente modificando fechas o estado
     public Reserva actualizarReserva(Reserva reserva){
         prepararReserva(reserva);
         return reservaRepo.save(reserva);
     }
 
-    // Permite cancelar reservas guardando un motivo resumido
+    // Permite cancelar reservas guardando un motivo de forma resumida 
     public Reserva cancelarReserva(Integer id, String motivo){
-        Reserva reserva = reservaRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada con id " + id));
-        String motivoNormalizado = motivo != null ? motivo.trim() : null;
+        Optional<Reserva> reservaOptional = reservaRepo.findById(id);
+        if (!reservaOptional.isPresent()) {
+            throw new IllegalArgumentException("Reserva no encontrada con id " + id);
+        }
+        Reserva reserva = reservaOptional.get();
+        String motivoNormalizado = motivo != null ? motivo.trim() : null; // si el motivo no es null , lo devuelve como normalizado y lo acorta . En caso contrario lo deja en null
         if (motivoNormalizado != null && motivoNormalizado.length() > 200){
             motivoNormalizado = motivoNormalizado.substring(0, 200);
         }
@@ -95,12 +102,12 @@ public class ReservaService {
         return reservaRepo.save(reserva);
     }
 
-    // Elimina permanentemente una reserva (solo se usa en demos/tests)
+    // Elimina permanentemente una reserva, solo se utiiliza en los casos de prueba 
     public void eliminarReserva(Integer id){
         reservaRepo.deleteById(id);
     }
 
-    // Ensambla la reserva previo a guardar: valida fechas, carga entidades y calcula total
+    // Prepara la reserva antes de guardarla o actualizarla
     private void prepararReserva(Reserva reserva){
         validarFechas(reserva);
         if (reserva.getEstadoReserva() == null){
@@ -124,14 +131,17 @@ public class ReservaService {
         }
     }
 
-    // Obtiene la habitación desde la base para evitar precios desactualizados
+    // Carga la habitación completa desde la base antes de asociarla a la reserva
     private Habitacion cargarHabitacion(Reserva reserva){
         Habitacion habitacion = reserva.getHabitacion();
         if (habitacion == null || habitacion.getId() == null){
             return null;
         }
-        return habitacionRepo.findById(habitacion.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Habitación no encontrada con id " + habitacion.getId()));
+        Optional<Habitacion> habitacionOptional = habitacionRepo.findById(habitacion.getId());
+        if (!habitacionOptional.isPresent()) {
+            throw new IllegalArgumentException("Habitación no encontrada con id " + habitacion.getId());
+        }
+        return habitacionOptional.get();
     }
 
     // Obtiene el usuario completo desde la base antes de asociarlo a la reserva
@@ -140,13 +150,16 @@ public class ReservaService {
         if (usuario == null || usuario.getId() == 0){
             return null;
         }
-        return usuarioRepo.findById(usuario.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id " + usuario.getId()));
+        Optional<Usuario> usuarioOptional = usuarioRepo.findById(usuario.getId());
+        if (!usuarioOptional.isPresent()) {
+            throw new IllegalArgumentException("Usuario no encontrado con id " + usuario.getId());
+        }
+        return usuarioOptional.get();
     }
 
-    // Calcula el total sumando noches, personas, suplemento diario y extras
+    // Calcula el total sumando noches, personas, suplemento diario y servicios
     private BigDecimal calcularPrecio(Reserva reserva){
-        int noches = Math.max(reserva.calculoNoches(), 1);
+        int noches = Math.max(reserva.calculoNoches(), 1); // ningun valor menor que 1
         int personas = Math.max(reserva.getNumeroPersonas(), 1);
 
         BigDecimal precioPorNoche = BigDecimal.ZERO;
@@ -158,7 +171,7 @@ public class ReservaService {
         total = total.add(RECARGO_POR_PERSONA.multiply(BigDecimal.valueOf(personas)));
         total = total.add(SUPLEMENTO_POR_DIA.multiply(BigDecimal.valueOf(noches)));
 
-        if (Boolean.TRUE.equals(reserva.gettodoIncluido())){
+        if (Boolean.TRUE.equals(reserva.gettodoIncluido())){// si el todo incluido ha sido seleccionado se añade su coste
             total = total.add(COSTE_TODO_INCLUIDO);
         }
 

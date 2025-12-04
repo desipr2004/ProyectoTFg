@@ -58,7 +58,7 @@ public class Habitacion {
     @JsonIgnoreProperties("habitaciones")
     private Hotel hotel;
 
-    @JsonIgnore
+    @JsonIgnore//JsonIgnore se utiliza para evitar loops 
     @OneToMany(mappedBy = "habitacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reserva> reservas;
 

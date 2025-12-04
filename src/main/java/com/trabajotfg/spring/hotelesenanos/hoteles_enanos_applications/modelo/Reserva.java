@@ -178,7 +178,7 @@ public class Reserva {
         this.emailUsuario = email;
     }
 
-    //Propiedad calculada para exponer el nombre completo del usuario en JSON sin crear columnas extras.
+    //Solo lo leemos, no se guarda en la base de datos
     @Transient
     public String getNombreCompletoUsuario(){
         if(usuario == null){
@@ -191,7 +191,7 @@ public class Reserva {
         return completo.isEmpty() ? null : completo;
     }
 
-    //Otro dato de solo lectura para que el front pueda mostrar el correo cuando haga falta.
+    // solo lo lee para que el front pueda mostrar el correo cuando sea necesario.
     @Transient
     public String getEmailUsuario(){
         if(usuario != null && usuario.getEmail() != null){
@@ -229,14 +229,14 @@ public class Reserva {
         this.estadoReserva = EstadoReserva.COMPLETADA;
     }
 
-    //Calculo del total de dias entre ellas
+    //Calculo del total de noches de la reserva
     public int calculoNoches(){
         if(fechaEntrada != null && fechaSalida != null && !fechaSalida.isBefore(fechaEntrada)){
             return (int)(fechaSalida.toEpochDay() - fechaEntrada.toEpochDay());
         }
         return 0;
     }
-
+ // Parecido a un get pero calcula el precio total segun las reglas establecidas
     public BigDecimal precioTotal(){
         int noches = Math.max(calculoNoches(), 1);
         int personas = Math.max(numPersonas, 1);

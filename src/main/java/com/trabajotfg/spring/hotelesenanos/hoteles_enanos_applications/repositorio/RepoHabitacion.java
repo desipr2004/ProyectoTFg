@@ -14,7 +14,6 @@ public interface RepoHabitacion extends JpaRepository<Habitacion, Integer> {
     List<Habitacion> findByHotel(Hotel hotel);
 
     //Habitaciones ativas
-    // Corregido: la entidad `Habitacion` define el campo como `activa`
     List<Habitacion> findByActivaTrue();
 
     //Buscar habitaciones disponibles

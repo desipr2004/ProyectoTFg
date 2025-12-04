@@ -2,6 +2,7 @@ package com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.servicio
 
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -43,9 +44,13 @@ public class UsuarioServiceTest {
         String emailDuplicado = "duplicado@test.com";
         usuarioService.registrarUsuario("Prueba", "Su", emailDuplicado, "bbb", "611024000");
 
-        assertThatThrownBy(() ->
-                usuarioService.registrarUsuario("Prueba2", "No", emailDuplicado, "aaaa", "622023740")
-        ).isInstanceOf(Exception.class)
+        ThrowingCallable registrarDuplicado = new ThrowingCallable() {
+            @Override
+            public void call() throws Throwable {
+                usuarioService.registrarUsuario("Prueba2", "No", emailDuplicado, "aaaa", "622023740");
+            }
+        };
+        assertThatThrownBy(registrarDuplicado).isInstanceOf(Exception.class)
          .hasMessageContaining("email");
     }
 }

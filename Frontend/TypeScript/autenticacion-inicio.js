@@ -1,12 +1,12 @@
 (function(){
-    // Script reutilizado en la landing para abrir modales de login/registro y hablar con la API
+    // Script reutilizado  para abrir los modales de login/registro y hablar con la API
     var resolvedProtocol = window.location.protocol === "https:" ? "https:" : "http:";
     var resolvedHost = window.location.hostname && window.location.hostname !== "" ? window.location.hostname : "localhost";
     var URL_API = resolvedProtocol + "//" + resolvedHost + ":8080/api";
 
     var SesionApp = window.SesionApp || {};
 
-    // Ejecuta la callback cuando el DOM está listo (soporta carga temprana)
+    // Ejecuta la callback cuando el DOM está listo para manipularlo
     function alCargar(callback){
         if(document.readyState === "loading"){
             document.addEventListener("DOMContentLoaded", callback);
@@ -15,7 +15,7 @@
         }
     }
 
-    // Muestra mensajes contextualizados bajo los formularios
+    // Muestra mensajes de aviso, error o exito en un elemento
     function mostrarAviso(elemento, mensaje, tipo){
         if(!elemento){
             return;
@@ -27,7 +27,7 @@
         }
     }
 
-    // Helpers para mostrar u ocultar modales reutilizando clases CSS
+    // muestran u ocultan modales reutilizando la clase del CSS
     function mostrarModal(modal){
         if(modal){
             modal.classList.add("open");
@@ -164,7 +164,7 @@
                             window.location.href = "inicio.html#hotelsList";
                         }, 600);
                     }else{
-                        mostrarAviso(mensajeRegistro, resultadoApi.error || "No se pudo registrar el usuario", "error");
+                        mostrarAviso(mensajeRegistro, resultadoApi.error || "No se ha podido registrar al usuario", "error");
                     }
                 }catch(error){
                     mostrarAviso(mensajeRegistro, "Error al registrar el usuario.", "error");

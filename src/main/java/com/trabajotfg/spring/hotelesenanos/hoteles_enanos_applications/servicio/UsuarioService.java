@@ -10,14 +10,13 @@ import com.trabajotfg.spring.hotelesenanos.hoteles_enanos_applications.Utils.Cif
 import java.util.Optional;
 import java.util.List;
 
-// Servicio central que coordina validaciones, cifrado y persistencia de usuarios
 @Service
 public class UsuarioService {
     
     @Autowired
     private RepoUsuario repoUsuario;
 
-    // Crear un nuevo usuario aplicando cifrado y valores por defecto
+    // Crea un nuevo usuario aplicando cifrado y valores por defecto
     public Usuario crerUsuario(Usuario usuario) throws Exception{
         String contrasenna = usuario.getContrasenna();
         String contrasennaSegura = Cifrado.cifrarPassword(contrasenna);
@@ -37,15 +36,14 @@ public class UsuarioService {
         return repoUsuario.save(usuario);
     }
 
-    // Comprueba si ya existe el correo para evitar duplicidades
+    // Comprueba si ya existe el correo para evitar duplicados
     public boolean existePorEmail(String email){
         return repoUsuario.existsByEmail(email);
     }
 
-    // Registro usado por el frontend cuando no hay sesión activa
+    // Registro 
     public Usuario registrarUsuario(String nombre, String apellido, String email, String contrasenna, String telefono) throws Exception{
         if(existeEmail(email)){
-            // Mensaje estandarizado para los tests
             throw new Exception("El email ya está registrado");
         }
 
@@ -60,7 +58,7 @@ public class UsuarioService {
         return crerUsuario(nuevoUsuario);
     }
     
-    // Inicio de sesión clásico: busca correo y compara contraseñas cifradas
+    // Inicio de sesión con validación de credenciales
     public Usuario iniciarSesion(String email, String contrasenna) throws Exception{
         Optional<Usuario> usuario = repoUsuario.findByEmail(email);
 
@@ -78,12 +76,12 @@ public class UsuarioService {
 
     }
 
-    // Listado completo usado en paneles de administración
+    // Lista completa de los usuarios
     public List<Usuario> listaUsuarios(){
         return repoUsuario.findAll();
     }
 
-    // Lookup por ID devolviendo Optional para que la capa web emita 404
+    // Búsqueda por id
     public Optional<Usuario> buscarPorID(int id){
         return repoUsuario.findById(id);
 
